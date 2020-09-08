@@ -1,0 +1,30 @@
+Requirement:
+ to fetch the month based on integer. Without using if conditions and all. Like if the  integer is 1 I need to get January.
+ 
+ Concept Covered: DataTime , Date, Concat, java import of Month
+
+
+Solution 1:
+
+%dw 2.0
+output application/json
+import java!java::time::Month
+
+---
+Month::of(1)
+
+
+
+Solution : 2   -> Requires to pass additional hardcoded value
+
+%dw 2.0
+output application/json
+var passMonthVal = "02"
+var sampleDateYear = "-01-2020"
+var concatText = passMonthVal ++ sampleDateYear
+---
+concatText as Date {format : "MM-dd-yyyy"} as String {format : "MMM"} 
+
+
+
+
