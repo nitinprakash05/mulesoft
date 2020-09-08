@@ -1,0 +1,78 @@
+This transform message carry concept of Reduce, typeOf, map and mapObject
+
+Sample Input
+[
+	{
+		"a" : "aa",
+		"b" : "bb",
+		"c" :[
+			{
+				"d" : "dd",
+				"e" : "ee"
+			},
+			{
+				"f" : "ff",
+				"g" : "gg"
+			}
+		]
+	},
+	{
+		"h" : "hh",
+		"i" : "ii",
+		"j" :[
+			{
+				"k" : "kk",
+				"l" : "ll"
+			},
+			{
+				"m" : "mm",
+				"n" : "nn"
+			}
+		]
+	}
+
+]
+
+
+To obtain Sample Output:
+[
+  {
+    "a": "aa",
+    "b": "bb",
+    "d": "dd",
+    "e": "ee",
+    "f": "ff",
+    "g": "gg"
+  },
+  {
+    "h": "hh",
+    "i": "ii",
+    "k": "kk",
+    "l": "ll",
+    "m": "mm",
+    "n": "nn"
+  }
+]
+
+
+Dataweave:
+
+%dw 2.0
+output application/json
+
+---
+payload map () -> {
+  ($ mapObject(v,k,i) -> {
+   
+   x: ( 
+    if(typeOf(v) ~= 'String') {
+        (k) : v
+    }
+    else if(typeOf(v) ~= 'Array') {
+       y: v reduce ($$ ++ $) 
+    }.y
+    else {}
+   )
+   
+   }.x)
+}
