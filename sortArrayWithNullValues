@@ -1,0 +1,58 @@
+
+Sort Array which will have null values. null will be put in last 
+
+1) use of count of duplicate values
+2) store how many times null is present
+3) store in one array then number of times null is present -> by using repeat keyword.
+4) concat array
+5) repalce null text with null keyword once its sorted
+
+%dw 2.0
+output application/json
+import * from dw::core::Strings
+var arr1 = [null,0,1,4,8,4,6,8,9,1,null,null,null]
+var newArr = (arr1 map () -> {
+    x: if($ != null) $ else ""
+}.x) filter ($ != "")
+var arr2 = (arr1 map () -> {
+    x: if ($ ~= null ) "text" else $
+}.x )
+var countText = (((arr2 groupBy $) pluck $) map (value) -> {
+    (dupid: value[0]) if sizeOf(value) >= 1,
+    (count: sizeOf(value)) if(sizeOf(value) >= 1)
+}) filter ($ != {})
+var countNull = ((countText map () ->{
+    x: if($.dupid ~= 'text') $.count else ""
+}.x) filter ($ != ""))[0]
+var countNull1 = countNull as Number
+var newOrder = newArr orderBy $
+var addNull = (repeat("null,", countNull1)) splitBy  ","
+var newArrFormation = newOrder ++ addNull
+---
+newArrFormation map () -> {
+    x: if ($ ~= "null") null else $
+}.x
+
+
+---------------------------
+input:
+
+[null,0,1,4,8,4,6,8,9,1,null,null,null]
+
+output::
+
+[
+  0,
+  1,
+  1,
+  4,
+  4,
+  6,
+  8,
+  8,
+  9,
+  null,
+  null,
+  null,
+  null
+]
