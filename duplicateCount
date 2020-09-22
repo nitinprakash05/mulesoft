@@ -1,0 +1,21 @@
+Below can be used to count the number of duplicate values in array
+
+%dw 2.0
+output application/json
+var arr = [1,3,2,2,4] 
+---
+(((arr groupBy $) pluck $) map (value) -> {
+    (dupid: value[0]) if sizeOf(value) > 1,
+    (count: sizeOf(value)) if(sizeOf(value) >1)
+}) filter ($ != {})
+
+
+------------------------------------------
+
+Output::
+[
+  {
+    "dupid": 2,
+    "count": 2
+  }
+]
