@@ -1,0 +1,57 @@
+This code will be used to repeat a json object or array Objects depending on what we pass in size.
+Suppose if we pass 3 in size, then same input will be written 3 times 
+
+Concept used: Recurssive Function 
+
+
+%dw 2.0
+output application/json
+var size = 3
+fun inputRep(pay, counter) = if(counter < size) pay ++ inputRep(pay, (counter+1)) else payload
+
+var counter = 1
+---
+inputRep(payload,counter)
+
+
+-------------------------
+Input:
+
+[{
+    "message": "Hello world!",
+    "message1" : "new Hello"
+}]
+
+Output:
+
+[
+  {
+    "message": "Hello world!",
+    "message1": "new Hello"
+  },
+  {
+    "message": "Hello world!",
+    "message1": "new Hello"
+  },
+  {
+    "message": "Hello world!",
+    "message1": "new Hello"
+  }
+]
+---------------------------
+
+input: 
+{
+    "message": "Hello world!"
+}
+
+
+output:
+{
+  "message": "Hello world!",
+  "message": "Hello world!",
+  "message": "Hello world!"
+}
+
+
+
