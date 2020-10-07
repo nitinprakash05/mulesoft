@@ -1,0 +1,40 @@
+used:
+    Recurssive methods to add 0 in time
+    Substring for string
+    Concat String
+
+Input:
+We will be sending with time (it can be even only minutes or sec or with hours) the output should be in Time format ("HH:MM:ss")
+
+var time = "03"
+
+Output
+{
+  "finalResult": "00:00:03"
+}
+-------------------------------
+var time = "103"
+
+{
+  "finalResult": "00:01:03"
+}
+-------------------------------
+var time = "11103"
+{
+  "finalResult": "01:11:03"
+}
+
+--------------
+%dw 2.0
+output application/json
+var time = "03"
+fun appendZeroes(digits,size) = if(size < 6) appendZeroes(("0" ++ digits), sizeOf(digits)+1) else digits
+var x = sizeOf(time)
+var afterZeroAddition  = appendZeroes(time, sizeOf(time)) 
+var hour = afterZeroAddition[0 to 1]
+var min = afterZeroAddition[2 to 3]
+var sec = afterZeroAddition[4 to 5]
+---
+{
+    finalResult: hour ++ ":" ++ min ++ ":" ++ sec
+}
