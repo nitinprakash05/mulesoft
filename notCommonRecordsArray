@@ -1,0 +1,15 @@
+Pass 2 arrays, and findout records which are not present in 1st array (or records which are not common in both)
+
+%dw 2.0
+output application/json
+var a1= [1,2,4]
+var a2 = [4,6,1,7]
+---
+a2 -- a1
+
+
+Output:
+[
+  6,
+  7
+]
