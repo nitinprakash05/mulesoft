@@ -13,3 +13,24 @@ Output:
   6,
   7
 ]
+
+
+
+Pass 2 arrays and find common element from both array
+
+%dw 2.0
+output application/json
+var a1= [1,2,4]
+var a2 = [4,6,1,7]
+---
+a1 reduce (item, acc = []) -> if (a2 contains item) acc + item else acc
+
+
+
+
+output:
+
+[
+  1,
+  4
+]
