@@ -1,0 +1,55 @@
+Input:
+
+{
+    "employeeId" : "122",
+    "employeeName" : "Nitin",
+    "projectId" : "1",
+    "projectName" : "xyz",
+    "levelId" : "122",
+    "levelName" : "Senior"
+}
+
+
+CODE:::::
+
+%dw 2.0
+output application/json
+import * from dw::core::Objects
+var spiltPayload = payload divideBy 2
+fun indexPayload(previosPayload) = (
+    flatten(spiltPayload[0 to previosPayload])
+)
+---
+(spiltPayload map using (previosPayload = indexPayload($$)) {
+    newPayload : ((previosPayload))
+
+}.newPayload) map () -> {
+    newPayload : $ reduce ($$ ++ $)
+}.newPayload
+
+
+
+
+
+
+output:
+[
+  {
+    "employeeId": "122",
+    "employeeName": "Nitin"
+  },
+  {
+    "employeeId": "122",
+    "employeeName": "Nitin",
+    "projectId": "1",
+    "projectName": "xyz"
+  },
+  {
+    "employeeId": "122",
+    "employeeName": "Nitin",
+    "projectId": "1",
+    "projectName": "xyz",
+    "levelId": "122",
+    "levelName": "Senior"
+  }
+]
