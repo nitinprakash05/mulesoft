@@ -53,3 +53,54 @@ output:
     "levelName": "Senior"
   }
 ]
+
+
+
+
+
+
+Input:
+
+[
+  {
+    "employeeId": "122",
+    "employeeName": "Nitin"
+  },
+  {
+    "employeeId": "122",
+    "employeeName": "Nitin",
+    "projectId": "1",
+    "projectName": "xyz"
+  },
+  {
+    "employeeId": "122",
+    "employeeName": "Nitin",
+    "projectId": "1",
+    "projectName": "xyz",
+    "levelId": "122",
+    "levelName": "Senior"
+  }
+]
+
+
+Code::: for csv 
+
+%dw 2.0
+output application/csv header = false
+---
+payload map () -> {
+    "list" : "listName",
+    "employeeId" : $.employeeId,
+    "projectId" : $.projectId,
+    "levelId" : $.levelId,
+    "value" : $[-1]
+}
+
+
+output::::
+
+listName,122,,,Nitin
+listName,122,1,,xyz
+listName,122,1,122,Senior
+
+
