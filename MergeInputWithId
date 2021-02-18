@@ -1,0 +1,66 @@
+Input:::
+
+{
+    "data": {
+        "nsdata": [
+            { 
+            "acc_Id": 1,
+            "subs_id": 114
+            },
+             { 
+            "acc_Id": 3,
+            "subs_id": 112
+            }
+        ],
+        "account": [
+            {
+            "acc_Id": 1,
+            "acc_type_skey": 12233
+
+        },{
+            "acc_Id": 2,
+            "acc_type_skey": 12233
+
+        }],
+        "subsidiary" : [{
+            "subs_id": 114,
+            "le_skey": 1233
+        },
+        {
+            "subs_id": 112,
+            "le_skey": 1233
+        }]
+    }
+        
+}
+
+
+Output:::
+[
+  {
+    "accId": 12233,
+    "subsKey": 1233
+  },
+  {
+    "accId": "!",
+    "subsKey": 1233
+  }
+]
+
+
+Code:::
+
+
+%dw 2.0
+output application/json
+---
+payload.data.nsdata map ((item, index) -> {
+
+    "accId":  ( (payload.data.account filter ($.*acc_Id contains item.acc_Id) map (itema) -> {
+      'accTypeSkey': itema.acc_type_skey,
+    }."accTypeSkey")[0]) default "!",
+
+    "subsKey": ( (payload.data.subsidiary filter ($.*subs_id contains item.subs_id) map (itema) -> {
+      'subsTypeSkey': itema.le_skey,
+    }."subsTypeSkey")[0]) default "!",
+})
