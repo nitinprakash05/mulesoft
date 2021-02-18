@@ -1,0 +1,73 @@
+Input::
+
+[{
+"Period" :  "1",
+"Amount" : 8877777.28,
+"Year" : 2012,
+"Company" : "02",
+"GL_Account":"111002",
+"Cost_Centre": "000"
+},
+{
+"Period" :  "2",
+"Amount" : 887,
+"Year" : 2012,
+"Company" : "02",
+"GL_Account":"111004",
+"Cost_Centre": "000"
+}]
+
+Output:::
+[
+  {
+    "period": "1",
+    "Amount": 8877777.28,
+    "Year": 2012,
+    "Company": "02",
+    "GL_Account:": "111002",
+    "Cost_Centre": "000",
+    "NS ID": "760020"
+  },
+  {
+    "period": "2",
+    "Amount": 887,
+    "Year": 2012,
+    "Company": "02",
+    "GL_Account:": "111004",
+    "Cost_Centre": "000",
+    "NS ID": "!"
+  }
+]
+
+
+CODE WITH cross ref::
+
+%dw 2.0
+output application/json
+var cross = [{
+"Source System ": "Macola",
+"Account": "111002",
+"HFM Values": "111110",
+"NS ID": "760020",
+"NS Name": "pretty cash"
+},
+{
+"Source System ": "Macola",
+"Account": "111003",
+"HFM Values": "111110",
+"NS ID": "760020",
+"NS Name": "pretty cash"
+}]
+---
+payload map (item) ->
+  {
+   'period' : item.Period,
+           'Amount' : item.Amount,
+           'Year': item.Year,
+           'Company': item.Company,
+           'GL_Account:': item.GL_Account,
+           'Cost_Centre': item.Cost_Centre,
+            'NS ID': ( (cross filter ($.*Account contains item.GL_Account) map (itema) -> {
+      'NS ID': itema."NS ID",
+    }."NS ID")[0]) default "!"
+  }
