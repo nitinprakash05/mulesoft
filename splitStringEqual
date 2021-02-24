@@ -15,3 +15,29 @@ fun repeat( start, end) = if(end < totalSize) (slice(arr,start,end) reduce($$ ++
 
 repeat( 0, 3)
 
+
+
+
+
+
+
+
+
+
+
+
+2nd method if it has only zeroes like
+input:
+{
+    "message": "0000000000000"
+}
+
+
+%dw 2.0
+output application/json
+---
+joinBy(flatten(payload.message scan(/000/)), "-")
+
+
+
+output: "000-000-000-000"
