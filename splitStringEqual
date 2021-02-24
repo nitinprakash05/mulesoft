@@ -1,0 +1,17 @@
+Output: "123-456-789"
+
+%dw 2.0
+output application/json
+import * from dw::core::Objects
+import * from dw::core::Arrays
+var stringInput = "123456789"
+var arr = stringInput splitBy  ""
+var totalSize = sizeOf(arr)
+
+
+
+fun repeat( start, end) = if(end < totalSize) (slice(arr,start,end) reduce($$ ++ $)) as String ++ "-" ++ (repeat( (start+3), (end+3))) else (slice(arr,start,end) reduce($$ ++ $)) as String
+---
+
+repeat( 0, 3)
+
