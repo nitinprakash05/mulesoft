@@ -1,0 +1,41 @@
+Filter out max value and unique keys .. keys can be dynamic each time 
+
+Input:::
+[{
+    "123" : 1
+},
+{
+    "123" : 14
+},
+{
+    "123" : 8
+},
+{
+    "123" : 1
+},
+{
+    "321" : 6
+},
+{
+    "321" : 9
+}
+]
+
+
+
+Ouput:::
+
+{
+  "123": 14,
+  "321": 9
+}
+
+
+
+
+%dw 2.0
+output application/json
+var dis = payload distinctBy ((item, index) -> item)
+var dis1 = dis reduce ($ ++ $$) orderBy (-$)
+---
+dis1 distinctBy ($$)
