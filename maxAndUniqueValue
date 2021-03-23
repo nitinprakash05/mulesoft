@@ -25,10 +25,15 @@ Input:::
 
 Ouput:::
 
+[
 {
-  "123": 14,
-  "321": 9
+  "123": 14
+  
+},
+{
+"321": 9
 }
+]
 
 
 
@@ -37,5 +42,6 @@ Ouput:::
 output application/json
 var dis = payload distinctBy ((item, index) -> item)
 var dis1 = dis reduce ($ ++ $$) orderBy (-$)
+var preFinal = dis1 distinctBy ($$)
 ---
-dis1 distinctBy ($$)
+(preFinal groupBy ($$) ) pluck $
