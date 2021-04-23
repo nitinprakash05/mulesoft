@@ -1,0 +1,37 @@
+if Key contains .(DOT) then replace with "_"
+
+Input:
+
+[{
+    "mess.age": "Hello world!"
+},
+{
+    "description": {
+        "test.Dot": "123"
+    }
+}
+]
+
+
+Output:
+[
+  {
+    "mess_age": "Hello world!"
+  },
+  {
+    "description": {
+      "test_Dot": "123"
+    }
+  }
+]
+
+
+
+Transform:::
+
+%dw 2.0
+output application/json
+fun rec(value) = if(value is Object) (value mapObject ((value, key, index) -> if((key as String) contains ".") ((key replace "." with "_"): rec(value)) else (key): rec(value) )) else if(value is Array) (value map rec($)) else value
+---
+rec(payload)
+
