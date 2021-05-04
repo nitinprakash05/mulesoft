@@ -1,0 +1,97 @@
+THIS CODE WILL BE USED TO PRINT HALF PYRAMID STRUCTURE USING *
+
+Input:
+
+{
+  "z": "*"
+}
+
+
+CODE::::
+
+
+%dw 2.0
+output application/csv separator= " ", header=false
+import * from dw::core::Objects
+var size= 10
+
+fun inputRep(pay, counter) = if(counter < size) pay ++ inputRep(pay, (counter+1)) else payload
+
+var counter = 1
+var newPayload = inputRep(payload,counter)
+var spiltPayload = newPayload divideBy 1
+fun indexPayload(previosPayload) = (
+    flatten(spiltPayload[0 to previosPayload])
+)
+---
+(spiltPayload map using (previosPayload = indexPayload($$)) {
+    newPayload : ((previosPayload))
+
+}.newPayload) map () -> {
+    newPayload : $ reduce ($$ ++ $)
+}.newPayload
+
+
+
+OUTPUT::::
+
+*
+* *
+* * *
+* * * *
+* * * * *
+* * * * * *
+* * * * * * *
+* * * * * * * *
+* * * * * * * * *
+* * * * * * * * * *
+
+
+
+
+
+
+
+
+IF we need to do reverse half pyramid , we can use [-1 to 0] to do it.e.x:
+
+code:
+
+
+%dw 2.0
+output application/csv separator= " ", header=false
+import * from dw::core::Objects
+var size= 10
+
+fun inputRep(pay, counter) = if(counter < size) pay ++ inputRep(pay, (counter+1)) else payload
+
+var counter = 1
+var newPayload = inputRep(payload,counter)
+var spiltPayload = newPayload divideBy 1
+fun indexPayload(previosPayload) = (
+    flatten(spiltPayload[0 to previosPayload])
+)
+---
+((spiltPayload map using (previosPayload = indexPayload($$)) {
+    newPayload : ((previosPayload))
+
+}.newPayload) map () -> {
+    newPayload : $ reduce ($$ ++ $)
+}.newPayload)[-1 to 0]
+
+
+
+
+
+OUTPUT:::
+
+* * * * * * * * * *
+* * * * * * * * *
+* * * * * * * *
+* * * * * * *
+* * * * * *
+* * * * *
+* * * *
+* * *
+* *
+*
