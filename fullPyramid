@@ -1,0 +1,48 @@
+{
+   "z" : "*"
+}
+
+
+
+%dw 2.0
+output application/csv separator= "\\s/", header=false
+import * from dw::core::Objects
+import * from dw::core::Strings
+var size= 5
+
+fun inputRep(pay, counter) = if(counter < size) pay ++ inputRep(pay, (counter+1)) else payload
+
+var counter = 1
+var newPayload = inputRep(payload,counter)
+var spiltPayload = newPayload divideBy 1
+fun indexPayload(previosPayload) = (
+    flatten(spiltPayload[0 to previosPayload])
+)
+---
+((spiltPayload map using (previosPayload = indexPayload($$)) {
+    newPayload : (["x": leftPad(" ", size-$$)] ++ (previosPayload))
+
+}.newPayload) map () -> {
+    newPayload : $ reduce ($$ ++ $)
+}.newPayload)
+
+
+
+Output from code now::
+
+     \*
+    \*\*
+   \*\*\*
+  \*\*\*\*
+ \*\*\*\*\*
+
+
+
+
+
+Desired Output:
+        *
+      * * *
+    * * * * *
+  * * * * * * *
+* * * * * * * * *
