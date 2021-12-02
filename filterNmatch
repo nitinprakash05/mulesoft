@@ -1,0 +1,79 @@
+input::
+[{
+   "hwdid": 111,
+   "sensorId": 123,
+   "description1": "drawin here",
+  
+   "description2": "drwain desc 2",
+   "building": "darwin",
+   "lastTriggerType": "Absent",
+   "lastTriggerTime": "2021-12-01T07:08:24+00:00"
+},
+{
+   "hwdid": 116,
+   "sensorId": 126,
+   "description1": "drawin1 here",
+  
+   "description2": "drawin1 desc 2",
+   "building": "darwin 1",
+   "lastTriggerType": "Absent",
+   "lastTriggerTime": "2021-12-01T07:08:24+00:00"
+},
+{
+   "hwdid": 112,
+   "sensorId": 124,
+   "description1": "",
+  
+   "description2": "",
+   "building": "darwin",
+   "lastTriggerType": "Absent",
+   "lastTriggerTime": "2021-12-02T16:50:30.509938Z"
+},
+{
+   "hwdid": 113,
+   "sensorId": 124,
+   "description1": "",
+  
+   "description2": "",
+   "building": "darwin",
+   "lastTriggerType": "occupied",
+   "lastTriggerTime": "2021-12-01T07:08:24+00:00"
+}]
+
+--------------------------------------------------------------------------
+
+DATAWEAVE::;
+--------------------------------------------------------------------------
+
+%dw 2.0
+output application/json
+var x = [{
+    "id": 111111,
+    "description": "drawin here"
+
+},{
+    "id": 111112,
+    "description": "test"
+
+}]
+
+var a = ((payload filter (($.lastTriggerTime <= now() - |PT10M|)) and $.lastTriggerType == 'Absent') map ((item, index) -> {
+    'desc' : item.description1
+} )) 
+---
+x map ((item, index) -> {
+    (a map ((item1, index1) -> {
+        ("id": item.id ) if(item1.desc ~=  item.description)
+    } ))
+}) filter ($.id != null)
+
+
+--------------------------------------------------------------------------
+
+
+output::
+[
+  {
+    "id": 111111
+  }
+]
