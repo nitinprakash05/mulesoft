@@ -45,7 +45,7 @@ fun workingDate(d) =
   else (d)
 )
 ---
-workingDate(inputDate)
+if (workingDate(inputDate) == inputDate) workingDate(inputDate + |P1D|) else workingDate(inputDate)
 
 
 
