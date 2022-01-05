@@ -1,0 +1,57 @@
+input:
+
+{
+    "today" : "2022-01-26"
+    
+}
+
+Code:::
+
+
+%dw 2.0
+import * from dw::core::Objects
+import * from dw::core::Arrays
+output application/json skipNullOn= 'everywhere'
+
+var inputDate= (((payload.today) as String {format:"yyyy-MM-dd"} )as Date {fromat : "yyyy-MM-dd"}) 
+var inputStr=(payload.today) as String {format:"dd-MM-yyyy"} 
+
+var numOfDays = daysBetween('2022-01-01','2022-12-31')
+var startDate = '2022-01-01' as String {format: "dd-MM-yyyy"}
+var allDate = (0 to numOfDays) map (startDate + ("P$($$)D" as Period))
+
+var allWeekends = (allDate map ((item, index) -> {
+    (if(item as String  {format:"eee"} == "Sat" or item as String  {format:"eee"} == "Sun")
+    x: (item)
+    else x: ""
+    )
+}) filter ($.x !="")).x
+
+var Holiday= allWeekends ++ ["2022-01-26","2022-03-01","2022-03-18","2022-04-14","2022-04-15","2022-05-03","2022-05-16","2022-07-10","2022-08-09","2022-08-15","2022-08-19","2022-10-02","2022-10-05","2022-10-09","2022-10-24","2022-11-08","2022-12-25"]
+
+var allHolidays =  Holiday map ($ as String {format:"yyyy-MM-dd"} )as Date {fromat : "yyyy-MM-dd"}
+
+fun workingDate(d) =
+( if(allHolidays contains(d))
+  (
+      if((d) as String  {format:"eee"} == "Sat")
+      workingDate(d + |P2D|)
+      else if((d) as String  {format:"eee"} == "Sun")
+      workingDate(d + |P1D|)
+      else if((d) as String  {format:"eee"} == "Mon" or (d) as String  {format:"eee"} == "Tue" or (d) as String  {format:"eee"} == "wed" or (d) as String  {format:"eee"} == "Thu" or (d) as String  {format:"eee"} == "Fri")
+      workingDate(d + |P1D|)
+      else (d + |P1D|)
+  )
+  else (d)
+)
+---
+workingDate(inputDate)
+
+
+
+
+
+Output:
+
+
+"2022-01-27"
