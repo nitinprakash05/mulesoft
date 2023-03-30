@@ -1,0 +1,449 @@
+THis script will convert the Nested XML to json by extracting expression and concatenating them by operator 
+Later that json is converted to CSV using simple map operator
+
+
+Script::
+
+%dw 2.0
+output application/json
+import * from dw::core::Arrays
+
+
+fun simpleTestExpression(s) = {
+   
+    "SimpleTest": s.*expressionName map ((item1, index1) -> {
+       x: (item1) 
+    }.x) reduce ($$ ++ " " ++ s.operatorInBetween ++ " " ++ $)
+}.SimpleTest 
+
+
+fun finalSimpleTestExpression(se) = (flatten(simpleTestExpression(se).SimpleTest) map ((item, index) -> {
+    "finalExpression": item.*expressionName reduce ($$ ++ " " ++ item.operatorInBetween ++ " " ++ $)
+}.finalExpression) ) reduce ($$ ++ "," ++ $)
+
+fun newSimpleNested(a) = {
+    
+     "finalExpression": (a.*expressionName divideBy 2) map ((item2, index2) -> {
+        y : item2 reduce ($$ ++ " " ++ a.operatorInBetween ++ " " ++ $) 
+    }.y) reduce ($$ ++ " "  ++ " " ++ $)
+}
+
+fun action(a) = a map ((item, index) -> {
+    "actionOutput": item.Form default "" ++ " : " ++  
+    (item.*Expression map ((item1, index1) -> 
+        (item.Target default "" ++ " = " ++ item1.Value default "")
+       
+     ) default [] reduce ($$ ++ " = " ++ $))
+}.actionOutput ) default [] reduce ($$ ++ " and " ++ $)
+
+---
+payload.RuleDictionary.*RuleSet.*Rule map ((item, index) -> {
+    
+    "ruleName": item.Name,
+   
+    "ruleActive": item.Active,
+    
+    (((item.*Pattern map ((item1, index1) -> {
+
+       
+        //("pattern" ++ (index1 + 1)  ++ " simpleExpression") :  if(item1.Aggregate?) item1.Aggregate.Variable default "" ++ (item1.Aggregate.IDofFunction replace "B}" with " ") ++ " where "  else "",
+    
+         ("pattern" ++ (index1 + 1) ++ " patternConditions") : (if(item1.Aggregate?) item1.Aggregate.Variable default "" ++ (item1.Aggregate.IDofFunction replace "B}" with " ") ++ " where "  else "") ++ ((item1.*Nested map ((item4, index4) -> {
+   
+    "SimpleTest": (item4.*SimpleTest map ((item5, index5) -> {
+        (item5..*Expression map ((item6, index6) -> {
+             "expressionName": item6.Value,
+           "operatorInBetween":  if(item5.IDofOperator == 'B}nil') if(item5.SimpleTest.IDofOperator == 'B}nil') item5.SimpleTest.SimpleTest.IDofOperator else  item5.SimpleTest.IDofOperator default ""  else item5.IDofOperator,
+           "connectiveOperator": item5.Connective
+        }))
+    })) map ((item, index) -> {
+        "finalExp" : (if(sizeOf(item.*expressionName ) > 2)  (newSimpleNested(item).finalExpression default "" replace  "B}" with ""  )  else simpleTestExpression(item) ) default "" replace  "B}" with ""
+    }.finalExp)
+}.SimpleTest reduce ($$ ++ ";" ++ $)))[0] default "" ++ " and " ++ (item1.*SimpleTest map ((item, index) -> {
+            x: (item.*Expression) map ((item3, index3) -> {
+                expression: item3.Value 
+            }.expression ) default [] reduce ($$ ++ " " ++ item.IDofOperator default " " ++ " " ++ $)  default "" replace  "B}" with "" 
+        })).x[0] default "")
+
+       
+      
+   })))),
+   "output": action(item.*Action)
+})
+
+
+
+
+Json to Csv
+%dw 2.0
+output application/csv
+---
+payload map ((item, index) -> {
+
+"Rule Name": item.ruleName default '',
+"Rule Active": item.ruleActive default '',
+"Condition1": item.'pattern1 patternConditions' default '',
+"Condition2": item.'pattern2 patternConditions' default '',
+"Condition3": item.'pattern3 patternConditions' default '',
+"Condition4" : item.'pattern4 patternConditions' default '',
+"Condition5": item.'pattern5 patternConditions' default '',
+"Condition6": item.'pattern6 patternConditions' default '',
+"Condition7": item.'pattern7 patternConditions' default '',
+"Condition8": item.'pattern8 patternConditions' default '',
+"Condition9": item.'pattern9 patternConditions' default '',
+"Condition10": item.'pattern10 patternConditions' default '',
+"Condition11": item.'pattern11 patternConditions' default '',
+"Condition12": item.'pattern12 patternConditions' default '',
+"Condition13": item.'pattern13 patternConditions' default '',
+"Condition14": item.'pattern14 patternConditions' default '',
+"Condition15": item.'pattern15 patternConditions' default '',
+
+"Rule Actions": item.'output' default ''
+
+})
+
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+input::
+
+<RuleDictionary id="G}fd2f7f1:14e78056db8:-7bcc" xmlns="http://xmlns.oracle.com/rules/dictionary">
+  <Name>brDetermineCertificateEligibility</Name>
+  <Alias>brDetermineCertificateEligibility</Alias>
+  <Package>determinecertificateeligibility</Package>
+  <Version>11.1.1.0.0</Version>
+  <RuleSet id="G}fd2f7f1:14e78056db8:-7bb6">
+    <Name>Ruleset</Name>
+    <Alias>Ruleset</Alias>
+    <ValidationUpdateNumber>12193</ValidationUpdateNumber>
+    <Active>true</Active>
+    <CalendarForm>DateTime</CalendarForm>
+<Rule id="G}-63780a5d:180fc031ead:-7bf0">
+      <Name>PROF_SC_V2_RULE</Name>
+      <Alias>PROF_SC_V2_RULE</Alias>
+      <ValidationUpdateNumber>12193</ValidationUpdateNumber>
+      <Priority>medium</Priority>
+      <Active>true</Active>
+      <CalendarForm>DateTime</CalendarForm>
+      <TreeMode>true</TreeMode>
+      <Visible>true</Visible>
+      <Pattern id="L}61541">
+        <FactType>DetermineCertificateEligibilityForBRRequest</FactType>
+        <IDofFactType>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest</IDofFactType>
+        <FactPath>DetermineCertificateEligibilityForBRRequest</FactPath>
+        <FactPathIDs>L}61541</FactPathIDs>
+        <Form>Fact Path</Form>
+        <Connective>&amp;&amp;</Connective>
+        <TestForm>Simple</TestForm>
+        <Expression id="L}61542">
+          <IsConstant>false</IsConstant>
+          <ParameterID>B}nil</ParameterID>
+        </Expression>
+        <Operator>(for each case where)</Operator>
+      </Pattern>
+      <Pattern id="L}61543">
+        <IDofFactType>B}nil</IDofFactType>
+        <Form>Pattern Block</Form>
+        <Connective>&amp;&amp;</Connective>
+        <TestForm>Simple</TestForm>
+        <Expression id="L}61562">
+          <IsConstant>false</IsConstant>
+          <ParameterID>B}nil</ParameterID>
+        </Expression>
+        <Operator>aggregate</Operator>
+        <SimpleTest id="L}61557">
+          <IDofFactType>B}nil</IDofFactType>
+          <Form>FormNotNested</Form>
+          <Expression id="L}61558">
+            <Value>SBRpass</Value>
+            <ResolvedValue>`L}61560`</ResolvedValue>
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+          <Expression id="L}61559">
+            <Value>1</Value>
+            <ResolvedValue>1</ResolvedValue>
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+          <IDofOperator>B}&gt;=</IDofOperator>
+          <Connective>&amp;&amp;</Connective>
+          <Visible>true</Visible>
+          <DSLId>B}nil</DSLId>
+        </SimpleTest>
+        <Nested id="L}61544">
+          <FactType>BRRequest$Facts</FactType>
+          <IDofFactType>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts</IDofFactType>
+          <FactPath>DetermineCertificateEligibilityForBRRequest/facts</FactPath>
+          <FactPathIDs>L}61541 J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}</FactPathIDs>
+          <Variable>DetermineCertificateEligibilityForBRRequest/facts7</Variable>
+          <Form>Fact Path</Form>
+          <Connective>&amp;&amp;</Connective>
+          <TestForm>Simple</TestForm>
+          <Expression id="L}61556">
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+          <Operator>(for each case where)</Operator>
+          <SimpleTest id="L}61545">
+            <IDofFactType>B}nil</IDofFactType>
+            <Form>FormNotNested</Form>
+            <Expression id="L}61546">
+              <Value>DetermineCertificateEligibilityForBRRequest.facts</Value>
+              <ResolvedValue>`L}61541`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}`</ResolvedValue>
+              <IsConstant>false</IsConstant>
+              <ParameterAlias>children</ParameterAlias>
+              <ParameterID>B}function.contains_children</ParameterID>
+            </Expression>
+            <Expression id="L}61547">
+              <Value>DetermineCertificateEligibilityForBRRequest/facts7</Value>
+              <ResolvedValue>`L}61544`</ResolvedValue>
+              <IsConstant>false</IsConstant>
+              <ParameterAlias>child</ParameterAlias>
+              <ParameterID>B}function.contains_child</ParameterID>
+            </Expression>
+            <IDofOperator>B}function.contains</IDofOperator>
+            <Connective>&amp;&amp;</Connective>
+            <Visible>false</Visible>
+            <DSLId>B}nil</DSLId>
+          </SimpleTest>
+          <SimpleTest id="L}61548">
+            <IDofFactType>B}nil</IDofFactType>
+            <Form>FormNested</Form>
+            <IDofOperator>B}nil</IDofOperator>
+            <Connective>&amp;&amp;</Connective>
+            <SimpleTest id="L}61549">
+              <IDofFactType>B}nil</IDofFactType>
+              <Form>FormNested</Form>
+              <IDofOperator>B}nil</IDofOperator>
+              <Connective>||</Connective>
+              <SimpleTest id="L}61550">
+                <IDofFactType>B}nil</IDofFactType>
+                <Form>FormNotNested</Form>
+                <Expression id="L}61551">
+                  <Value>DetermineCertificateEligibilityForBRRequest/facts7.subjectCode</Value>
+                  <ResolvedValue>`L}61544`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{subjectCode}`</ResolvedValue>
+                  <IsConstant>false</IsConstant>
+                  <ParameterID>B}nil</ParameterID>
+                </Expression>
+                <Expression id="L}61552">
+                  <Value>&quot;SBR&quot;</Value>
+                  <ResolvedValue>&quot;SBR&quot;</ResolvedValue>
+                  <IsConstant>false</IsConstant>
+                  <ParameterID>B}nil</ParameterID>
+                </Expression>
+                <IDofOperator>B}==</IDofOperator>
+                <Connective>&amp;&amp;</Connective>
+                <Visible>true</Visible>
+                <DSLId>B}nil</DSLId>
+              </SimpleTest>
+              <SimpleTest id="L}61553">
+                <IDofFactType>B}nil</IDofFactType>
+                <Form>FormNotNested</Form>
+                <Expression id="L}61554">
+                  <Value>DetermineCertificateEligibilityForBRRequest/facts7.passed</Value>
+                  <ResolvedValue>`L}61544`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{passed}`</ResolvedValue>
+                  <IsConstant>false</IsConstant>
+                  <ParameterID>B}nil</ParameterID>
+                </Expression>
+                <Expression id="L}61555">
+                  <Value>true</Value>
+                  <ResolvedValue>true</ResolvedValue>
+                  <IsConstant>false</IsConstant>
+                  <ParameterID>B}nil</ParameterID>
+                </Expression>
+                <IDofOperator>B}==</IDofOperator>
+                <Connective>&amp;&amp;</Connective>
+                <Visible>true</Visible>
+                <DSLId>B}nil</DSLId>
+              </SimpleTest>
+              <Visible>true</Visible>
+              <DSLId>B}nil</DSLId>
+            </SimpleTest>
+            <Visible>true</Visible>
+            <DSLId>B}nil</DSLId>
+          </SimpleTest>
+        </Nested>
+        <Aggregate id="L}61560">
+          <IDofFunction>B}count</IDofFunction>
+          <Variable>SBRpass</Variable>
+          <Expression id="L}61561">
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+        </Aggregate>
+      </Pattern>
+      <Pattern id="L}61563">
+        <IDofFactType>B}nil</IDofFactType>
+        <Form>Pattern Block</Form>
+        <Connective>&amp;&amp;</Connective>
+        <TestForm>Simple</TestForm>
+        <Expression id="L}61581">
+          <IsConstant>false</IsConstant>
+          <ParameterID>B}nil</ParameterID>
+        </Expression>
+        <Operator>aggregate</Operator>
+        <SimpleTest id="L}61576">
+          <IDofFactType>B}nil</IDofFactType>
+          <Form>FormNotNested</Form>
+          <Expression id="L}61577">
+            <Value>vSBLCnt</Value>
+            <ResolvedValue>`L}61579`</ResolvedValue>
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+          <Expression id="L}61578">
+            <Value>1</Value>
+            <ResolvedValue>1</ResolvedValue>
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+          <IDofOperator>B}&gt;=</IDofOperator>
+          <Connective>&amp;&amp;</Connective>
+          <Visible>true</Visible>
+          <DSLId>B}nil</DSLId>
+        </SimpleTest>
+        <Nested id="L}61564">
+          <FactType>BRRequest$Facts</FactType>
+          <IDofFactType>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts</IDofFactType>
+          <FactPath>DetermineCertificateEligibilityForBRRequest/facts</FactPath>
+          <FactPathIDs>L}61541 J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}</FactPathIDs>
+          <Variable>DetermineCertificateEligibilityForBRRequest/facts7</Variable>
+          <Form>Fact Path</Form>
+          <Connective>&amp;&amp;</Connective>
+          <TestForm>Simple</TestForm>
+          <Expression id="L}61575">
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+          <Operator>(for each case where)</Operator>
+          <SimpleTest id="L}61565">
+            <IDofFactType>B}nil</IDofFactType>
+            <Form>FormNotNested</Form>
+            <Expression id="L}61566">
+              <Value>DetermineCertificateEligibilityForBRRequest.facts</Value>
+              <ResolvedValue>`L}61541`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}`</ResolvedValue>
+              <IsConstant>false</IsConstant>
+              <ParameterAlias>children</ParameterAlias>
+              <ParameterID>B}function.contains_children</ParameterID>
+            </Expression>
+            <Expression id="L}61567">
+              <Value>DetermineCertificateEligibilityForBRRequest/facts7</Value>
+              <ResolvedValue>`L}61564`</ResolvedValue>
+              <IsConstant>false</IsConstant>
+              <ParameterAlias>child</ParameterAlias>
+              <ParameterID>B}function.contains_child</ParameterID>
+            </Expression>
+            <IDofOperator>B}function.contains</IDofOperator>
+            <Connective>&amp;&amp;</Connective>
+            <Visible>false</Visible>
+            <DSLId>B}nil</DSLId>
+          </SimpleTest>
+          <SimpleTest id="L}61568">
+            <IDofFactType>B}nil</IDofFactType>
+            <Form>FormNested</Form>
+            <IDofOperator>B}nil</IDofOperator>
+            <Connective>||</Connective>
+            <SimpleTest id="L}61569">
+              <IDofFactType>B}nil</IDofFactType>
+              <Form>FormNotNested</Form>
+              <Expression id="L}61570">
+                <Value>DetermineCertificateEligibilityForBRRequest/facts7.subjectCode</Value>
+                <ResolvedValue>`L}61564`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{subjectCode}`</ResolvedValue>
+                <IsConstant>false</IsConstant>
+                <ParameterID>B}nil</ParameterID>
+              </Expression>
+              <Expression id="L}61571">
+                <Value>&quot;SBL&quot;</Value>
+                <ResolvedValue>&quot;SBL&quot;</ResolvedValue>
+                <IsConstant>false</IsConstant>
+                <ParameterID>B}nil</ParameterID>
+              </Expression>
+              <IDofOperator>B}==</IDofOperator>
+              <Connective>&amp;&amp;</Connective>
+              <Visible>true</Visible>
+              <DSLId>B}nil</DSLId>
+            </SimpleTest>
+            <SimpleTest id="L}61572">
+              <IDofFactType>B}nil</IDofFactType>
+              <Form>FormNotNested</Form>
+              <Expression id="L}61573">
+                <Value>DetermineCertificateEligibilityForBRRequest/facts7.passed</Value>
+                <ResolvedValue>`L}61564`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{passed}`</ResolvedValue>
+                <IsConstant>false</IsConstant>
+                <ParameterID>B}nil</ParameterID>
+              </Expression>
+              <Expression id="L}61574">
+                <Value>true</Value>
+                <ResolvedValue>true</ResolvedValue>
+                <IsConstant>false</IsConstant>
+                <ParameterID>B}nil</ParameterID>
+              </Expression>
+              <IDofOperator>B}==</IDofOperator>
+              <Connective>&amp;&amp;</Connective>
+              <Visible>true</Visible>
+              <DSLId>B}nil</DSLId>
+            </SimpleTest>
+            <Visible>true</Visible>
+            <DSLId>B}nil</DSLId>
+          </SimpleTest>
+        </Nested>
+        <Aggregate id="L}61579">
+          <IDofFunction>B}count</IDofFunction>
+          <Variable>vSBLCnt</Variable>
+          <Expression id="L}61580">
+            <IsConstant>false</IsConstant>
+            <ParameterID>B}nil</ParameterID>
+          </Expression>
+        </Aggregate>
+      </Pattern>
+      <ShowPatterns>true</ShowPatterns>
+      <Logical>false</Logical>
+      <Action id="L}61624">
+        <Form>Assert New</Form>
+        <Target>DetermineCertificateEligibilityForBRResponse</Target>
+        <ResolvedTarget>`J}public com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRResponse()`</ResolvedTarget>
+        <Expression id="L}61625">
+          <Value>&quot;PROF_SC_V2&quot;</Value>
+          <ResolvedValue>&quot;PROF_SC_V2&quot;</ResolvedValue>
+          <IsConstant>false</IsConstant>
+          <ParameterAlias>certificateCode</ParameterAlias>
+          <ParameterID>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRResponse.{certificateCode}</ParameterID>
+        </Expression>
+        <DSLId>B}nil</DSLId>
+      </Action>
+      <Action id="L}61626">
+        <Form>Assign</Form>
+        <Target>NO_CERTIFICATE</Target>
+        <ResolvedTarget>`G}40b31d27:152f92f3d2d:-7c37`</ResolvedTarget>
+        <Expression id="L}61627">
+          <Value>false</Value>
+          <ResolvedValue>false</ResolvedValue>
+          <IsConstant>false</IsConstant>
+          <ParameterID>B}nil</ParameterID>
+        </Expression>
+        <DSLId>B}nil</DSLId>
+      </Action>
+    </Rule>
+  </RuleSet>
+<ValidationUpdateNumber>12193</ValidationUpdateNumber>
+  <UpdateNumber>12193</UpdateNumber>
+  <ResourceBundle>brDetermineCertificateEligibilityTranslations</ResourceBundle>
+  <TestModel id="L}31759">
+    <ValidationUpdateNumber>6913</ValidationUpdateNumber>
+    <UpdateNumber>6914</UpdateNumber>
+    <Validation>true</Validation>
+    <AutoSync>true</AutoSync>
+  </TestModel>
+  <Preferences id="G}33cfcf26:15e5ba04d73:-7bf0">
+    <RulesExecutionAlgorithm>RETE</RulesExecutionAlgorithm>
+    <DisallowErrorSuppression>false</DisallowErrorSuppression>
+    <PhraseSuggestions>All</PhraseSuggestions>
+    <RestrictAutoSuggestions>true</RestrictAutoSuggestions>
+    <IncludeChainedExpressions>true</IncludeChainedExpressions>
+  </Preferences>
+  <decisionModel id="L}31760">
+    <CreationUpdateNumber>2</CreationUpdateNumber>
+  </decisionModel>
+</RuleDictionary>
+
+
