@@ -119,7 +119,7 @@ input::
       <Visible>true</Visible>
       <Pattern id="L}61541">
         <FactType>DetermineCertificateEligibilityForBRRequest</FactType>
-        <IDofFactType>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest</IDofFactType>
+        <IDofFactType>J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest</IDofFactType>
         <FactPath>DetermineCertificateEligibilityForBRRequest</FactPath>
         <FactPathIDs>L}61541</FactPathIDs>
         <Form>Fact Path</Form>
@@ -163,9 +163,9 @@ input::
         </SimpleTest>
         <Nested id="L}61544">
           <FactType>BRRequest$Facts</FactType>
-          <IDofFactType>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts</IDofFactType>
+          <IDofFactType>J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts</IDofFactType>
           <FactPath>DetermineCertificateEligibilityForBRRequest/facts</FactPath>
-          <FactPathIDs>L}61541 J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}</FactPathIDs>
+          <FactPathIDs>L}61541 J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}</FactPathIDs>
           <Variable>DetermineCertificateEligibilityForBRRequest/facts7</Variable>
           <Form>Fact Path</Form>
           <Connective>&amp;&amp;</Connective>
@@ -180,7 +180,7 @@ input::
             <Form>FormNotNested</Form>
             <Expression id="L}61546">
               <Value>DetermineCertificateEligibilityForBRRequest.facts</Value>
-              <ResolvedValue>`L}61541`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}`</ResolvedValue>
+              <ResolvedValue>`L}61541`.`J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}`</ResolvedValue>
               <IsConstant>false</IsConstant>
               <ParameterAlias>children</ParameterAlias>
               <ParameterID>B}function.contains_children</ParameterID>
@@ -212,7 +212,7 @@ input::
                 <Form>FormNotNested</Form>
                 <Expression id="L}61551">
                   <Value>DetermineCertificateEligibilityForBRRequest/facts7.subjectCode</Value>
-                  <ResolvedValue>`L}61544`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{subjectCode}`</ResolvedValue>
+                  <ResolvedValue>`L}61544`.`J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{subjectCode}`</ResolvedValue>
                   <IsConstant>false</IsConstant>
                   <ParameterID>B}nil</ParameterID>
                 </Expression>
@@ -232,7 +232,7 @@ input::
                 <Form>FormNotNested</Form>
                 <Expression id="L}61554">
                   <Value>DetermineCertificateEligibilityForBRRequest/facts7.passed</Value>
-                  <ResolvedValue>`L}61544`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{passed}`</ResolvedValue>
+                  <ResolvedValue>`L}61544`.`J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{passed}`</ResolvedValue>
                   <IsConstant>false</IsConstant>
                   <ParameterID>B}nil</ParameterID>
                 </Expression>
@@ -295,9 +295,9 @@ input::
         </SimpleTest>
         <Nested id="L}61564">
           <FactType>BRRequest$Facts</FactType>
-          <IDofFactType>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts</IDofFactType>
+          <IDofFactType>J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts</IDofFactType>
           <FactPath>DetermineCertificateEligibilityForBRRequest/facts</FactPath>
-          <FactPathIDs>L}61541 J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}</FactPathIDs>
+          <FactPathIDs>L}61541 J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}</FactPathIDs>
           <Variable>DetermineCertificateEligibilityForBRRequest/facts7</Variable>
           <Form>Fact Path</Form>
           <Connective>&amp;&amp;</Connective>
@@ -312,7 +312,7 @@ input::
             <Form>FormNotNested</Form>
             <Expression id="L}61566">
               <Value>DetermineCertificateEligibilityForBRRequest.facts</Value>
-              <ResolvedValue>`L}61541`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}`</ResolvedValue>
+              <ResolvedValue>`L}61541`.`J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest.{facts}`</ResolvedValue>
               <IsConstant>false</IsConstant>
               <ParameterAlias>children</ParameterAlias>
               <ParameterID>B}function.contains_children</ParameterID>
@@ -339,7 +339,7 @@ input::
               <Form>FormNotNested</Form>
               <Expression id="L}61570">
                 <Value>DetermineCertificateEligibilityForBRRequest/facts7.subjectCode</Value>
-                <ResolvedValue>`L}61564`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{subjectCode}`</ResolvedValue>
+                <ResolvedValue>`L}61564`.`J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{subjectCode}`</ResolvedValue>
                 <IsConstant>false</IsConstant>
                 <ParameterID>B}nil</ParameterID>
               </Expression>
@@ -359,7 +359,7 @@ input::
               <Form>FormNotNested</Form>
               <Expression id="L}61573">
                 <Value>DetermineCertificateEligibilityForBRRequest/facts7.passed</Value>
-                <ResolvedValue>`L}61564`.`J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{passed}`</ResolvedValue>
+                <ResolvedValue>`L}61564`.`J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRRequest$Facts.{passed}`</ResolvedValue>
                 <IsConstant>false</IsConstant>
                 <ParameterID>B}nil</ParameterID>
               </Expression>
@@ -392,13 +392,13 @@ input::
       <Action id="L}61624">
         <Form>Assert New</Form>
         <Target>DetermineCertificateEligibilityForBRResponse</Target>
-        <ResolvedTarget>`J}public com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRResponse()`</ResolvedTarget>
+        <ResolvedTarget>`J}public xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRResponse()`</ResolvedTarget>
         <Expression id="L}61625">
           <Value>&quot;PROF_SC_V2&quot;</Value>
           <ResolvedValue>&quot;PROF_SC_V2&quot;</ResolvedValue>
           <IsConstant>false</IsConstant>
           <ParameterAlias>certificateCode</ParameterAlias>
-          <ParameterID>J}com.accaglobal.xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRResponse.{certificateCode}</ParameterID>
+          <ParameterID>J}xmlns.enterprisebusinessobjects.determinecertificateeligibilityforbr.v1.DetermineCertificateEligibilityForBRResponse.{certificateCode}</ParameterID>
         </Expression>
         <DSLId>B}nil</DSLId>
       </Action>
