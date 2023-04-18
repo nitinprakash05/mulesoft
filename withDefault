@@ -1,0 +1,64 @@
+%dw 2.0
+output application/json
+import * from dw::core::Arrays
+
+//function to get simple expression 
+fun simpleTestExpression(s) = {
+	"SimpleTest": s.*expressionName map ((item1, index1) -> {
+		x: (item1)
+	}.x) reduce ($$ ++ " " ++ s.operatorInBetween ++ " " ++ $)
+}.SimpleTest
+
+//function is use simply simpleTestExpression to get final expression
+fun finalSimpleTestExpression(se) = (flatten(simpleTestExpression(se).SimpleTest) map ((item, index) -> {
+	"finalExpression": item.*expressionName reduce ($$ ++ " " ++ item.operatorInBetween ++ " " ++ $)
+}.finalExpression)) reduce ($$ ++ "," ++ $)
+
+//function is get to expression of Nested tag
+fun newSimpleNested(a) = {
+	"finalExpression": (a.*expressionName divideBy 2) map ((item2, index2) -> {
+		y: item2 reduce ($$ ++ " " ++ a.operatorInBetween ++ " " ++ $)
+	}.y) reduce ($$ ++ " " ++ " " ++ $)
+}
+
+//function is get action output
+fun action(a) = a map ((item, index) -> {
+	"actionOutput": item.Form default "" ++ " : " ++  
+    (item.*Expression map ((item1, index1) -> 
+        (item.Target default "" ++ " = " ++ item1.Value default "")
+       
+     ) default [] reduce ($$ ++ " = " ++ $))
+}.actionOutput ) default [] reduce ($$ ++ " and " ++ $)
+---
+payload.RuleDictionary.*RuleSet.*Rule map ((item, index) -> {
+	"ruleName": item.Name,
+	"ruleActive": item.Active,
+	
+	//to get final expression for each pattern
+	(((item.*Pattern map ((item1, index1) -> {
+		
+		("pattern" ++ (index1 + 1) ++ " patternConditions") : (if ( item1.Aggregate? ) item1.Aggregate.Variable default "" ++ (item1.Aggregate.IDofFunction replace "B}" with " ") ++ " where "  else "") ++ (item1.*Nested map ((item4, index4) -> {
+			"SimpleTest": (item4..*SimpleTest map ((item5, index5) -> {
+				(item5.*Expression map ((item6, index6) -> {
+					"expressionName": item6.Value,
+					"operatorInBetween": if ( item5.IDofOperator == 'B}nil' ) if ( item5.SimpleTest.IDofOperator == 'B}nil' ) item5.SimpleTest.SimpleTest.IDofOperator else  item5.SimpleTest.IDofOperator default ""  else item5.IDofOperator,
+					"connectiveOperator": item5.Connective
+				}))
+			})) filter ($ != {}) map ((item, index) -> {
+				"finalExp": (if ( sizeOf(item.*expressionName ) > 2 ) (newSimpleNested(item).finalExpression default "" replace  "B}" with "")  else simpleTestExpression(item)) default "" replace  "B}" with ""
+			}.finalExp)
+		}.SimpleTest reduce ($$ ++ ";" ++ $)))[0] default "" ++ " and " ++ ((((item1.*SimpleTest map ((item, index) -> {
+			(item..*Expression map ((item3, index3) -> {
+				
+					"expressionName": item3.Value,
+					"operationInBetween": (if(item.IDofOperator == "B}nil")item.SimpleTest.IDofOperator else item.IDofOperator) default ""  replace "B}" with "",
+					
+				
+			}))  
+			})
+		)) filter ($ != {}) map ((item, index) -> {
+            "finalExp": if(sizeOf(item.*expressionName) > 2) (item.*expressionName divideBy 2 map ((item2, index2) -> {y: item2 default [] reduce ($$ ++ " " ++ item.'operationInBetween' ++ " "++ $)}.y  default [] reduce ($$ ++ $)  default "" ) default [] reduce ($$ ++ ";" ++ $ ) ) default ""  else (item.*expressionName map ((item2, index2) -> {x: item2}.x) default [] reduce ($$ ++ " " ++ item.'operationInBetween' ++ " " ++ $  )) default ""
+        }.finalExp) default [] reduce ($$ ++ $)) default ""	)
+	})))),
+	"output": action(item.*Action)
+})
