@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="be724100-2f89-47fa-bbac-00d12707ad3c" >
+		<http:listener-connection host="0.0.0.0" port="8091" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="003055bc-19d3-492f-811d-5a48ca6806a8" >
+		<file:connection workingDir="${mule.home}/apps/${app.name}/" />
+	</file:config>
+	<flow name="xmltocsvFlow" doc:id="05412e5f-921f-4459-adbb-ef3e5255fac6" >
+		<http:listener doc:name="Listener" doc:id="3aa9b17b-235e-43bd-a3d3-05e2be8f8611" config-ref="HTTP_Listener_config" path="/xmlToCsv"/>
+		<ee:transform doc:name="extract form-data" doc:id="92a9ae97-bdd4-421f-a2b9-594e87049629" >
+			<ee:message >
+				<ee:set-payload >
+					<![CDATA[%dw 2.0 output application/java input payload multipart/form-data --- (payload.parts pluck $)]]>
+				</ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="extract-payload-content" doc:id="3d751b1a-11c0-4eed-8195-0f6041868b14" >
+			<ee:message >
+				<ee:set-payload >
+					<![CDATA[%dw 2.0 output application/xml writeDeclaration=false var p = (payload filter ($.headers.'Content-Disposition'.name == "file"))[0].content --- read(p,"application/xml")]]>
+				</ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="response-payload" doc:id="c8e66a71-84c8-4ba7-82f8-d910319553d2" >
+			<ee:message >
+				<ee:set-payload >
+					<![CDATA[%dw 2.0 output application/json import * from dw::core::Arrays //function to get simple expression fun simpleTestExpression(s) = { "SimpleTest": s.*expressionName map ((item1, index1) -> { x: (item1) }.x) reduce ($$ ++ " " ++ s.operatorInBetween ++ " " ++ $) }.SimpleTest //function is use simply simpleTestExpression to get final expression fun finalSimpleTestExpression(se) = (flatten(simpleTestExpression(se).SimpleTest) map ((item, index) -> { "finalExpression": item.*expressionName reduce ($$ ++ " " ++ item.operatorInBetween ++ " " ++ $) }.finalExpression)) reduce ($$ ++ "," ++ $) //function is get to expression of Nested tag fun newSimpleNested(a) = { "finalExpression": (a.*expressionName divideBy 2) map ((item2, index2) -> { y: item2 reduce ($$ ++ " " ++ a.operatorInBetween ++ " " ++ $) }.y) reduce ($$ ++ " " ++ " " ++ $) } //function is get action output fun action(a) = a map ((item, index) -> { "actionOutput": item.Form default "" ++ " : " ++ (item.*Expression map ((item1, index1) -> (item.Target default "" ++ " = " ++ item1.Value default "") ) default [] reduce ($$ ++ " = " ++ $)) }.actionOutput ) default [] reduce ($$ ++ " and " ++ $) --- payload.RuleDictionary.*RuleSet.*Rule map ((item, index) -> { "ruleName": item.Name, "ruleActive": item.Active, //to get final expression for each pattern (((item.*Pattern map ((item1, index1) -> { ("pattern" ++ (index1 + 1) ++ " patternConditions") : (if ( item1.Aggregate? ) item1.Aggregate.Variable default "" ++ (item1.Aggregate.IDofFunction replace "B}" with " ") ++ " where " else "") ++ (item1.*Nested map ((item4, index4) -> { "SimpleTest": (item4..*SimpleTest map ((item5, index5) -> { (item5.*Expression map ((item6, index6) -> { "expressionName": item6.Value, "operatorInBetween": if ( item5.IDofOperator == 'B}nil' ) if ( item5.SimpleTest.IDofOperator == 'B}nil' ) item5.SimpleTest.SimpleTest.IDofOperator else item5.SimpleTest.IDofOperator default "" else item5.IDofOperator, "connectiveOperator": item5.Connective })) })) filter ($ != {}) map ((item, index) -> { "finalExp": (if ( sizeOf(item.*expressionName ) > 2 ) (newSimpleNested(item).finalExpression default "" replace "B}" with "") else simpleTestExpression(item)) default "" replace "B}" with "" }.finalExp) }.SimpleTest reduce ($$ ++ ";" ++ $)))[0] default "" ++ " and " ++ ((((item1.*SimpleTest map ((item, index) -> { (item..*Expression map ((item3, index3) -> { "expressionName": item3.Value, "operationInBetween": (if(item.IDofOperator == "B}nil")item.SimpleTest.IDofOperator else item.IDofOperator) default "" replace "B}" with "", })) }) )) filter ($ != {}) map ((item, index) -> { "finalExp": if(sizeOf(item.*expressionName) > 2) (item.*expressionName divideBy 2 map ((item2, index2) -> {y: item2 default [] reduce ($$ ++ " " ++ item.'operationInBetween' ++ " "++ $)}.y default [] reduce ($$ ++ $) default "" ) default [] reduce ($$ ++ ";" ++ $ ) ) else (item.*expressionName map ((item2, index2) -> {x: item2}.x) default [] reduce ($$ ++ " " ++ item.'operationInBetween' ++ " " ++ $ )) }.finalExp) default [] reduce ($$ ++ $)) default "" ) })))), "output": action(item.*Action) }) ]]>
+				</ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="json-to-csv" doc:id="1ea6d188-8dce-499e-a49f-01b1c31654f8" >
+			<ee:message >
+				<ee:set-payload >
+					<![CDATA[%dw 2.0 output application/csv --- payload map ((item, index) -> { "Rule Name": item.ruleName default '', "Rule Active": item.ruleActive default '', "Condition1": item.'pattern1 patternConditions' default '', "Condition2": item.'pattern2 patternConditions' default '', "Condition3": item.'pattern3 patternConditions' default '', "Condition4" : item.'pattern4 patternConditions' default '', "Condition5": item.'pattern5 patternConditions' default '', "Condition6": item.'pattern6 patternConditions' default '', "Condition7": item.'pattern7 patternConditions' default '', "Condition8": item.'pattern8 patternConditions' default '', "Condition9": item.'pattern9 patternConditions' default '', "Condition10": item.'pattern10 patternConditions' default '', "Condition11": item.'pattern11 patternConditions' default '', "Condition12": item.'pattern12 patternConditions' default '', "Condition13": item.'pattern13 patternConditions' default '', "Condition14": item.'pattern14 patternConditions' default '', "Condition15": item.'pattern15 patternConditions' default '', "Rule Actions": item.'output' default '' })]]>
+				</ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:id="17baee31-3ffe-423d-9a7e-40485987f36e" config-ref="File_Config" path='certificateRules.csv' doc:name="Write-file"/>
+	</flow>
+</mule>
