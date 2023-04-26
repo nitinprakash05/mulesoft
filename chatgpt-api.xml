@@ -58,7 +58,25 @@ output application/java
   <flow name="chatgpt-apiFlow" doc:id="f6eb078b-cc3a-46f5-bf83-94c90b05d104" >
     <http:listener doc:name="Listener" doc:id="97a10346-0bdf-4e48-adf6-6208ba869ba9" config-ref="HTTP_Listener_config" path="/chat"/>
     <logger level="INFO" doc:name="Start Logger" doc:id="a588ed2e-1249-4af2-970c-6da8b68fdb9d" message="#[payload]"/>
-    <http:request method="POST" doc:name="ChatGPT Completion API Request" doc:id="c6d89333-709b-4a3b-9509-2a2cf466a64a" config-ref="HTTP_Request_configuration" path="/v1/chat/completions"/>
+    <ee:transform doc:name="request-payload" doc:id="1a730c68-8054-43bb-b2e3-ad468f85e0ed" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "model": "gpt-3.5-turbo",
+    "max_tokens": 128, //optional by default openAPI uses 2048 token
+    "n": 3,
+    "messages": [
+        {
+            "role": "user",
+            "content": payload.query
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	  <http:request method="POST" doc:name="ChatGPT Completion API Request" doc:id="c6d89333-709b-4a3b-9509-2a2cf466a64a" config-ref="HTTP_Request_configuration" path="/v1/chat/completions"/>
     <ee:transform doc:name="Transform Message" doc:id="66f7bf1d-c425-4978-8ba9-fd7ca35d78cd" >
       <ee:message >
         <ee:set-payload ><![CDATA[%dw 2.0
