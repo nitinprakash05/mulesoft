@@ -52,7 +52,7 @@ output application/java
   <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="3748c5a5-649a-4d2f-91fe-a400dbe698a6" >
     <http:request-connection protocol="HTTPS" host="api.openai.com" />
     <http:default-headers >
-      <http:default-header key="Authorization" value="Bearer sk - 44PEVPn CmzDNZLwT lQblT3Blbk FJ3gzKPLe5lXA1 WVhs Uz0T" />
+      <http:default-header key="Authorization" value="Bearer sk- 5qe9667Adu JD9hBm132ST3BlbkF JdJASMik15xEr VpfHx juc" />
     </http:default-headers>
   </http:request-config>
   <flow name="chatgpt-apiFlow" doc:id="8e613e05-558a-4d1d-ae00-53cb401b3f8f" >
