@@ -1,0 +1,11 @@
+{
+    "model": "gpt-3.5-turbo",
+    "max_tokens": 100,
+    "n": 3,
+    "messages": [
+        {
+            "role": "user",
+            "content": "Describe MuleSoft in layman terms in 100 words"           
+        }
+    ]
+}
