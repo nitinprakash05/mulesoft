@@ -8,18 +8,18 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
-	<!-- <http:listener-config name="HTTP_Listener_Configuration" doc:name="HTTP Listener config" doc:id="1e4bc116-9b3d-499a-b527-907ac07f985c" basePath="/chat">
+	<!-- <http:listener-config name="HTTP_Listener_Configuration" doc:name="HTTP Listener config" doc:id="cb01735f-90bf-4065-b3bf-4a22b33d34fa" basePath="/chat">
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config> -->
-	<!-- <http:request-config name="ChatGPT_Configuration" doc:name="HTTP Request configuration" doc:id="90cc8e87-0bcd-46af-a838-60e837529068" >
+	<!-- <http:request-config name="ChatGPT_Configuration" doc:name="HTTP Request configuration" doc:id="0e49b581-173f-4060-bfa6-c174b5ae9d04" >
 		<http:request-connection >
 			<http:authentication >
 				<http:basic-authentication username="${chatGPTAPI.username}" password="${chatGPTAPI.password}"/>
 			</http:authentication>
 		</http:request-connection>
 	</http:request-config> -->
-	<!-- <sub-flow name="c4e-notifications-subflow" doc:id="53b1595c-8e7e-4a4f-9fbd-729d076ffb69" >
-		<ee:transform doc:name="vars:alertMessage" doc:id="422e14fa-73f2-4b76-8f93-ff776d0a7b09" >
+	<!-- <sub-flow name="c4e-notifications-subflow" doc:id="d6c7a741-1aaf-48d0-918c-3fc459910fd6" >
+		<ee:transform doc:name="vars:alertMessage" doc:id="2e748917-abf8-4c94-a6e4-119b5f6ff7aa" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
@@ -30,67 +30,47 @@ output application/java
 ]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-			<try doc:name="Try" doc:id="c459ed35-c03e-477b-b500-15761a30c69f">
-			<cloudhub:create-notification doc:name="Create Notification" doc:id="a8820954-c4de-432a-9040-176749494ddf" config-ref="CloudHub_Config" domain="${api.name}" priority="ERROR" transactionId="#[vars.transactionProperties['x-transaction-id']]">
+			<try doc:name="Try" doc:id="bd9a6b54-0f4b-4388-b916-32fcf4d9b7f4">
+			<cloudhub:create-notification doc:name="Create Notification" doc:id="2fbab36b-4469-4dd9-9702-b39c3fcc237f" config-ref="CloudHub_Config" domain="${api.name}" priority="ERROR" transactionId="#[vars.transactionProperties['x-transaction-id']]">
 				<cloudhub:message><![CDATA[#[vars.alertMessage]]]></cloudhub:message>
 			</cloudhub:create-notification>
 			
 			<error-handler>
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="690f2e43-7451-4903-a900-8140c67c4e46" type="ANY">
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6efbe89d-107b-410e-a12c-223e7be5ad4f" type="ANY">
 					
 						
-					<set-variable value="#['TE-101-009']" doc:name="vars:c4eCommonErrorCode" doc:id="b2900de3-ef66-4381-b893-482e240be2c3" variableName="c4eCommonErrorCode" />
-						<set-variable value="#[%dw 2.0 output application/java -&#45;&#45; &quot;General Service Error: $(error.muleMessage.payload.description default 'Error received calling cloudhub connector')&quot;]" doc:name="vars:c4eCommonErrorDescription" doc:id="b5763b41-9cd3-45f7-a5e6-8723a2785c4a" variableName="c4eCommonErrorDescription" />
+					<set-variable value="#['TE-101-009']" doc:name="vars:c4eCommonErrorCode" doc:id="096b56d7-82b9-4670-8817-be9507dd6bd9" variableName="c4eCommonErrorCode" />
+						<set-variable value="#[%dw 2.0 output application/java -&#45;&#45; &quot;General Service Error: $(error.muleMessage.payload.description default 'Error received calling cloudhub connector')&quot;]" doc:name="vars:c4eCommonErrorDescription" doc:id="482a51f1-8820-4ec0-8362-babf130fefe6" variableName="c4eCommonErrorDescription" />
 					</on-error-propagate>
 			</error-handler>
 		</try>
 		
 	</sub-flow> -->
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3234f1d5-02a3-4eae-bf52-9b9bec49021a" >
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d8dc7fa7-c546-483c-ab93-d28a9a7f808e" >
     <http:listener-connection host="0.0.0.0" port="8081" />
   </http:listener-config>
-  <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="3748c5a5-649a-4d2f-91fe-a400dbe698a6" >
+  <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1bc92bf3-7f3c-46a6-82ce-c3b90b0e7484" >
     <http:request-connection protocol="HTTPS" host="api.openai.com" />
     <http:default-headers >
-      <http:default-header key="Authorization" value="Bearer sk- 5qe9667Adu JD9hBm132ST3BlbkF JdJASMik15xEr VpfHx juc" />
+      <http:default-header key="Authorization" value="Bearer sk- 5qe9667A duJD9hBm132 ST3BlbkFJdJASM ik15xEr VpfHxjuc" />
     </http:default-headers>
   </http:request-config>
-  <flow name="chatgpt-apiFlow" doc:id="8e613e05-558a-4d1d-ae00-53cb401b3f8f" >
-    <http:listener doc:name="Listener" doc:id="f08c6d77-9e28-4db1-9de4-3f9d9bdddf1e" config-ref="HTTP_Listener_config" path="/chat"/>
-    <logger level="INFO" doc:name="Start Logger" doc:id="e2dce20e-b9bb-45c8-b663-689051a59252" message="#[payload]"/>
-    <http:request method="POST" doc:name="ChatGPT Completion API Request" doc:id="07ee2c7d-6fbd-431f-93fd-4bc796c4bbfe" config-ref="HTTP_Request_configuration" path="/v1/chat/completions"/>
-    <ee:transform doc:name="Transform Message" doc:id="287ae4ad-6e5f-42f0-a4ee-5bc661522884" >
+  <flow name="chatgpt-apiFlow" doc:id="f6eb078b-cc3a-46f5-bf83-94c90b05d104" >
+    <http:listener doc:name="Listener" doc:id="97a10346-0bdf-4e48-adf6-6208ba869ba9" config-ref="HTTP_Listener_config" path="/chat"/>
+    <logger level="INFO" doc:name="Start Logger" doc:id="a588ed2e-1249-4af2-970c-6da8b68fdb9d" message="#[payload]"/>
+    <http:request method="POST" doc:name="ChatGPT Completion API Request" doc:id="c6d89333-709b-4a3b-9509-2a2cf466a64a" config-ref="HTTP_Request_configuration" path="/v1/chat/completions"/>
+    <ee:transform doc:name="Transform Message" doc:id="66f7bf1d-c425-4978-8ba9-fd7ca35d78cd" >
       <ee:message >
         <ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload.choices[0].message.content]]></ee:set-payload>
+payload.choices.message.content]]></ee:set-payload>
       </ee:message>
     </ee:transform>
-    <logger level="INFO" doc:name="End Logger" doc:id="b63af248-42e2-4543-8b92-f110d2d703e8" message="#[payload]"/>
+    <logger level="INFO" doc:name="End Logger" doc:id="6fe51b01-9585-4538-b1e1-095a1dc6f382" message="#[payload]"/>
   </flow>
 
     
 	
 	
 </mule>
-
-
-
-
-
-
-
-
-
-
-request::
-{
-    "model": "gpt-3.5-turbo",
-    "messages": [
-        {
-            "role": "user",
-            "content": "Describe MuleSoft in layman terms in 100 words"
-        }
-    ]
-}
