@@ -8,57 +8,29 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
-	<!-- <http:listener-config name="HTTP_Listener_Configuration" doc:name="HTTP Listener config" doc:id="cb01735f-90bf-4065-b3bf-4a22b33d34fa" basePath="/chat">
-		<http:listener-connection host="0.0.0.0" port="8081" />
-	</http:listener-config> -->
-	<!-- <http:request-config name="ChatGPT_Configuration" doc:name="HTTP Request configuration" doc:id="0e49b581-173f-4060-bfa6-c174b5ae9d04" >
-		<http:request-connection >
-			<http:authentication >
-				<http:basic-authentication username="${chatGPTAPI.username}" password="${chatGPTAPI.password}"/>
-			</http:authentication>
-		</http:request-connection>
-	</http:request-config> -->
-	<!-- <sub-flow name="c4e-notifications-subflow" doc:id="d6c7a741-1aaf-48d0-918c-3fc459910fd6" >
-		<ee:transform doc:name="vars:alertMessage" doc:id="2e748917-abf8-4c94-a6e4-119b5f6ff7aa" >
-			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="alertMessage" ><![CDATA[%dw 2.0
-output application/java
--&#45;&#45;
-'ErrorCode: $(vars.c4eCommonErrorCode default ''), ErrorDescription: $(vars.c4eCommonErrorDescription default ''), CorrelationId: $(vars.transactionProperties['x-transaction-id'] default '')'
-]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-			<try doc:name="Try" doc:id="bd9a6b54-0f4b-4388-b916-32fcf4d9b7f4">
-			<cloudhub:create-notification doc:name="Create Notification" doc:id="2fbab36b-4469-4dd9-9702-b39c3fcc237f" config-ref="CloudHub_Config" domain="${api.name}" priority="ERROR" transactionId="#[vars.transactionProperties['x-transaction-id']]">
-				<cloudhub:message><![CDATA[#[vars.alertMessage]]]></cloudhub:message>
-			</cloudhub:create-notification>
-			
-			<error-handler>
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6efbe89d-107b-410e-a12c-223e7be5ad4f" type="ANY">
-					
-						
-					<set-variable value="#['TE-101-009']" doc:name="vars:c4eCommonErrorCode" doc:id="096b56d7-82b9-4670-8817-be9507dd6bd9" variableName="c4eCommonErrorCode" />
-						<set-variable value="#[%dw 2.0 output application/java -&#45;&#45; &quot;General Service Error: $(error.muleMessage.payload.description default 'Error received calling cloudhub connector')&quot;]" doc:name="vars:c4eCommonErrorDescription" doc:id="482a51f1-8820-4ec0-8362-babf130fefe6" variableName="c4eCommonErrorDescription" />
-					</on-error-propagate>
-			</error-handler>
-		</try>
-		
-	</sub-flow> -->
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d8dc7fa7-c546-483c-ab93-d28a9a7f808e" >
-    <http:listener-connection host="0.0.0.0" port="8081" />
-  </http:listener-config>
-  <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1bc92bf3-7f3c-46a6-82ce-c3b90b0e7484" >
-    <http:request-connection protocol="HTTPS" host="api.openai.com" />
-    <http:default-headers >
-      <http:default-header key="Authorization" value="Bearer sk- 5qe9667A duJD9hBm132 ST3BlbkFJdJASM ik15xEr VpfHxjuc" />
-    </http:default-headers>
-  </http:request-config>
-  <flow name="chatgpt-apiFlow" doc:id="f6eb078b-cc3a-46f5-bf83-94c90b05d104" >
-    <http:listener doc:name="Listener" doc:id="97a10346-0bdf-4e48-adf6-6208ba869ba9" config-ref="HTTP_Listener_config" path="/chat"/>
-    <logger level="INFO" doc:name="Start Logger" doc:id="a588ed2e-1249-4af2-970c-6da8b68fdb9d" message="#[payload]"/>
-    <ee:transform doc:name="request-payload" doc:id="1a730c68-8054-43bb-b2e3-ad468f85e0ed" >
+	
+	
+  <flow name="chatgpt-flow" doc:id="e6041271-0da1-46d1-87e5-056bb9d3de5b" >
+   <http:listener-config name="HTTP_Listener_config"
+		doc:name="HTTP Listener config"
+		doc:id="c91ebb23-0630-46b8-8238-f7ff8bb9d528">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
+	</http:listener-config>
+	<http:request-config
+		name="HTTP_Request_configuration"
+		doc:name="HTTP Request configuration"
+		doc:id="197f3c27-d1ff-46e8-b748-ca4713937d2f">
+		<http:request-connection protocol="HTTPS"
+			host="api.openai.com" />
+		<http:default-headers>
+			<http:default-header key="Authorization"
+				value="Bearer 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" />
+		</http:default-headers>
+	</http:request-config>
+	  <http:listener doc:name="Listener" doc:id="147b4465-654a-478b-824d-ccfa788bc100" config-ref="HTTP_Listener_config" path="/chat"/>
+    <logger level="INFO" doc:name="Start Logger" doc:id="97ec334c-2e7a-401c-8147-9ed5f43088b0" message="#['Call openAPI and pass desired input']"/>
+   <ee:transform doc:name="request-payload" doc:id="1a730c68-8054-43bb-b2e3-ad468f85e0ed" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -75,17 +47,17 @@ output application/json
     ]
 }]]></ee:set-payload>
 			</ee:message>
-		</ee:transform>
-	  <http:request method="POST" doc:name="ChatGPT Completion API Request" doc:id="c6d89333-709b-4a3b-9509-2a2cf466a64a" config-ref="HTTP_Request_configuration" path="/v1/chat/completions"/>
-    <ee:transform doc:name="Transform Message" doc:id="66f7bf1d-c425-4978-8ba9-fd7ca35d78cd" >
+		</ee:transform> 
+		<http:request method="POST" doc:name="ChatGPT  Request" doc:id="6b88536b-ef44-4841-8101-032e8ce256f1" config-ref="HTTP_Request_configuration" path="/v1/chat/completions"/>
+    <ee:transform doc:name="response-payload" doc:id="f7a48aa9-b91f-4311-9cfa-c632e6d2792c" >
       <ee:message >
         <ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 payload.choices.message.content]]></ee:set-payload>
       </ee:message>
-    </ee:transform>
-    <logger level="INFO" doc:name="End Logger" doc:id="6fe51b01-9585-4538-b1e1-095a1dc6f382" message="#[payload]"/>
+    </ee:transform> 
+    <logger level="INFO" doc:name="End Logger" doc:id="5d4011d2-55c2-484c-b55c-7732fe837212" message="#[payload]"/>
   </flow>
 
     
