@@ -25,7 +25,7 @@ http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule
 			host="api.openai.com" />
 		<http:default-headers>
 			<http:default-header key="Authorization"
-				value="Bearer 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" />
+				value="Bearer <<yourkey>>" />
 		</http:default-headers>
 	</http:request-config>
 	  <http:listener doc:name="Listener" doc:id="147b4465-654a-478b-824d-ccfa788bc100" config-ref="HTTP_Listener_config" path="/chat"/>
