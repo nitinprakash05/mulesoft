@@ -16,9 +16,23 @@ http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f343ff1f-7528-4d2d-8e53-4b7ba81c5413" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<http:request-config name="platform-api-invocation" doc:name="HTTP Request configuration" doc:id="a50a164b-e7f6-44d6-9d7b-8f78ec64c4f1" >
+		<http:request-connection protocol="HTTPS" />
+	</http:request-config>
 	<flow name="get-connector-version-flow" doc:id="c50f7025-dc18-414f-982a-2dce2fab8d0d" >
     <http:listener doc:name="Listener" doc:id="190d2cd3-8013-48a6-8f9f-71baab7aa778" config-ref="HTTP_Listener_config" path="/chat"/>
     <logger level="INFO" doc:name="Start Logger" doc:id="e8bd0aeb-b932-4f11-a856-2fa161f20947" message="#['Call openAPI and pass desired input']"/>
+		<ee:transform doc:name="vars:pomDependencies" doc:id="10f942c1-91cb-4b8a-9aab-20982b91526f" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="pomDependencies" ><![CDATA[%dw 2.0
+output application/json
+var pomContent = readUrl("classpath://META-INF/maven/com.mycompany/testing/pom.xml", "xml")
+---
+pomContent]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<flow-ref doc:name="retrieve-anypoint-platform-access-token-subflow" doc:id="4e637878-41f9-4db7-8053-0416702dcfa6" name="retrieve-anypoint-platform-access-token-subflow"/>
    
   
@@ -60,10 +74,60 @@ output application/json
 				
 			
 	</sub-flow>
+	<sub-flow name="anypoint-platform-invocations-subflow" doc:id="3158461e-ccd2-45b4-ab51-30a7d2bf8461" >
+		<ee:transform doc:name="vars:dependencyList" doc:id="7dfe308c-eb93-449e-b094-5e5b4a946871">
+		<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="method" ><![CDATA['GET']]></ee:set-variable>
+				<ee:set-variable variableName="dependencyList" ><![CDATA[(vars.pomDependencies.project.dependencies.*dependency)]]></ee:set-variable>
+			
+</ee:variables>
+		
+</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="59ff692a-9085-46f8-ace4-c90bbec6bdd7" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="arr" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="7fe8e2da-579b-4c18-8e25-51f256783ab0" collection="#[vars.dependencyList]">
+			<ee:transform doc:name="vars:requestUriPath" doc:id="45ce4da3-7f41-4afc-b990-4b892b3be9ee" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="requestUriPath" ><![CDATA['https://anypoint.mulesoft.com/exchange/api/v2/assets/' ++ payload.groupId ++ "/" ++ payload.artifactId ++ "/asset"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<http:request method="#[vars.method]" doc:name="Request" doc:id="cb36d243-6542-4f01-b9a0-49e71f271e40" config-ref="platform-api-invocation" url="#[vars.requestUriPath]">
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer "++ (vars.tokenResponse.access_token  as String default "")
+}]]]></http:headers>
+			</http:request>
+			<ee:transform doc:name="Transform Message" doc:id="af9a3e4c-953b-4f9f-85eb-6f885c2a7115" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="arr" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.arr ++ payload]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</foreach>
+			
+	</sub-flow>
 	
 
     
 	
 	
+
 
 </mule>
