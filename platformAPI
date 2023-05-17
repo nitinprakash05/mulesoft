@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
+	
+	
+  <http:request-config name="anypoint-platform-api-token" doc:name="HTTP Request configuration" doc:id="7b5ab03e-3568-4b07-b1c2-174b771126da" >
+		<http:request-connection protocol="HTTPS" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f343ff1f-7528-4d2d-8e53-4b7ba81c5413" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="get-connector-version-flow" doc:id="c50f7025-dc18-414f-982a-2dce2fab8d0d" >
+    <http:listener doc:name="Listener" doc:id="190d2cd3-8013-48a6-8f9f-71baab7aa778" config-ref="HTTP_Listener_config" path="/chat"/>
+    <logger level="INFO" doc:name="Start Logger" doc:id="e8bd0aeb-b932-4f11-a856-2fa161f20947" message="#['Call openAPI and pass desired input']"/>
+		<flow-ref doc:name="retrieve-anypoint-platform-access-token-subflow" doc:id="4e637878-41f9-4db7-8053-0416702dcfa6" name="retrieve-anypoint-platform-access-token-subflow"/>
+   
+  
+</flow>
+	<sub-flow name="retrieve-anypoint-platform-access-token-subflow" doc:id="5f900f6e-e4ce-4a82-b5dc-5455e082150c" >
+		<logger level="INFO" doc:name="Logger" doc:id="cbea1dba-33b3-4a1c-8e63-12d64a1259c2" />
+		<ee:transform doc:name="Set token request" doc:id="0ea6a7b4-3cd4-4631-9721-b5532ff7c073">
+		<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "username": "<<placeholder>>",
+    "password": "<<placeholder>>"
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="method" ><![CDATA['POST']]></ee:set-variable>
+				<ee:set-variable variableName="requestUriPath" ><![CDATA['https://anypoint.mulesoft.com/accounts/login']]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+			
+		 
+				<flow-ref doc:name="get-anypoint-platform-access-token-subflow" doc:id="e9f4ec0a-0df2-4d45-9771-a8326c4c960a" name="get-anypoint-platform-access-token-subflow"/>
+			
+		
+		<set-variable value="#[payload]" doc:name="vars:tokenResponse" doc:id="a5bad414-4504-4c93-af63-c650e7d58b35" variableName="tokenResponse"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1bdbdfe1-8468-4219-8d92-03fe0d4dd140" message="#[vars.tokenResponse]"/>
+	</sub-flow>
+	<sub-flow name="get-anypoint-platform-access-token-subflow" doc:id="fd25c9a6-578a-4412-a8f3-d879c8531ba0" >
+		
+				
+					<http:request method="#[vars.method]" doc:name="Token call" doc:id="cb89b5e9-7333-4d84-9fbe-741cace4359f" config-ref="anypoint-platform-api-token" responseTimeout="30000" url="#[vars.requestUriPath]">
+						
+		</http:request>
+			
+
+				
+			
+	</sub-flow>
+	
+
+    
+	
+	
+
+</mule>
