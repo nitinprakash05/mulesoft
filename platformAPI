@@ -10,36 +10,36 @@ http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
 	
 	
-  <http:request-config name="anypoint-platform-api-token" doc:name="HTTP Request configuration" doc:id="7b5ab03e-3568-4b07-b1c2-174b771126da" >
+  <http:request-config name="anypoint-platform-api-token" doc:name="HTTP Request configuration" doc:id="fc31afe2-3d09-4940-8335-9538babe8995" >
 		<http:request-connection protocol="HTTPS" />
 	</http:request-config>
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f343ff1f-7528-4d2d-8e53-4b7ba81c5413" >
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="eb75be03-be72-4f6e-90b1-6296bb1f8240" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
-	<http:request-config name="platform-api-invocation" doc:name="HTTP Request configuration" doc:id="a50a164b-e7f6-44d6-9d7b-8f78ec64c4f1" >
+	<http:request-config name="platform-api-invocation" doc:name="HTTP Request configuration" doc:id="27ae836a-5989-4415-b644-43d02c86c7ae" >
 		<http:request-connection protocol="HTTPS" />
 	</http:request-config>
-	<flow name="get-connector-version-flow" doc:id="c50f7025-dc18-414f-982a-2dce2fab8d0d" >
-    <http:listener doc:name="Listener" doc:id="190d2cd3-8013-48a6-8f9f-71baab7aa778" config-ref="HTTP_Listener_config" path="/chat"/>
-    <logger level="INFO" doc:name="Start Logger" doc:id="e8bd0aeb-b932-4f11-a856-2fa161f20947" message="#['Call openAPI and pass desired input']"/>
-		<ee:transform doc:name="vars:pomDependencies" doc:id="10f942c1-91cb-4b8a-9aab-20982b91526f" >
+	<flow name="get-connector-version-flow" doc:id="6c3556fc-104b-49d2-a017-66a558b3c7cd" >
+    <http:listener doc:name="Listener" doc:id="f59da4d5-b132-45d5-ab27-05efbdf39b7f" config-ref="HTTP_Listener_config" path="/chat"/>
+    <logger level="INFO" doc:name="Start Logger" doc:id="4aaa0c8b-2c10-4b37-9880-e70752aae323" message="#['Call openAPI and pass desired input']"/>
+		<ee:transform doc:name="vars:pomDependencies" doc:id="94e25c86-6b76-462c-850b-4b30f4aea268" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="pomDependencies" ><![CDATA[%dw 2.0
 output application/json
-var pomContent = readUrl("classpath://META-INF/maven/com.mycompany/testing/pom.xml", "xml")
+var pomContent = readUrl("classpath://META-INF/maven/com.mycompany/platform-api/pom.xml", "xml")
 ---
 pomContent]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<flow-ref doc:name="retrieve-anypoint-platform-access-token-subflow" doc:id="4e637878-41f9-4db7-8053-0416702dcfa6" name="retrieve-anypoint-platform-access-token-subflow"/>
+		<flow-ref doc:name="retrieve-anypoint-platform-access-token-subflow" doc:id="fb8b09fb-8ec1-45f8-ba59-40560a59c989" name="retrieve-anypoint-platform-access-token-subflow"/>
    
   
 </flow>
-	<sub-flow name="retrieve-anypoint-platform-access-token-subflow" doc:id="5f900f6e-e4ce-4a82-b5dc-5455e082150c" >
-		<logger level="INFO" doc:name="Logger" doc:id="cbea1dba-33b3-4a1c-8e63-12d64a1259c2" />
-		<ee:transform doc:name="Set token request" doc:id="0ea6a7b4-3cd4-4631-9721-b5532ff7c073">
+	<sub-flow name="retrieve-anypoint-platform-access-token-subflow" doc:id="446e3ba6-62ab-4be9-854e-deec8cb45bcd" >
+		<logger level="INFO" doc:name="Logger" doc:id="ac9008ef-cde0-4e24-a42a-5ba535c009fb" />
+		<ee:transform doc:name="Set token request" doc:id="dd6638ea-aaa9-46c1-8714-1444446dc94e">
 		<ee:message>
 								<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -57,16 +57,18 @@ output application/json
 </ee:transform>
 			
 		 
-				<flow-ref doc:name="get-anypoint-platform-access-token-subflow" doc:id="e9f4ec0a-0df2-4d45-9771-a8326c4c960a" name="get-anypoint-platform-access-token-subflow"/>
+				<flow-ref doc:name="get-anypoint-platform-access-token-subflow" doc:id="c8316625-eab5-41f6-8099-aadce0831897" name="get-anypoint-platform-access-token-subflow"/>
 			
 		
-		<set-variable value="#[payload]" doc:name="vars:tokenResponse" doc:id="a5bad414-4504-4c93-af63-c650e7d58b35" variableName="tokenResponse"/>
-		<logger level="INFO" doc:name="Logger" doc:id="1bdbdfe1-8468-4219-8d92-03fe0d4dd140" message="#[vars.tokenResponse]"/>
-	</sub-flow>
-	<sub-flow name="get-anypoint-platform-access-token-subflow" doc:id="fd25c9a6-578a-4412-a8f3-d879c8531ba0" >
+		<set-variable value="#[payload]" doc:name="vars:tokenResponse" doc:id="7c0edbf8-0d01-465f-a7c1-ee31522c6ce3" variableName="tokenResponse"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e7c3e0b2-7bbf-4e63-b6af-7c195592d44f" message="#[vars.tokenResponse]"/>
+		<flow-ref doc:name="anypoint-platform-invocations-subflow" doc:id="bc682b2f-3f28-4e58-ab1f-0370f4aa744c" name="anypoint-platform-invocations-subflow"/>
+	
+</sub-flow>
+	<sub-flow name="get-anypoint-platform-access-token-subflow" doc:id="29f3218d-3377-41d8-a2e1-eddec7a7e861" >
 		
 				
-					<http:request method="#[vars.method]" doc:name="Token call" doc:id="cb89b5e9-7333-4d84-9fbe-741cace4359f" config-ref="anypoint-platform-api-token" responseTimeout="30000" url="#[vars.requestUriPath]">
+					<http:request method="#[vars.method]" doc:name="Token call" doc:id="0ec6b1ad-1f3a-4f21-a356-ed4f26e47056" config-ref="anypoint-platform-api-token" responseTimeout="30000" url="#[vars.requestUriPath]">
 						
 		</http:request>
 			
@@ -74,8 +76,8 @@ output application/json
 				
 			
 	</sub-flow>
-	<sub-flow name="anypoint-platform-invocations-subflow" doc:id="3158461e-ccd2-45b4-ab51-30a7d2bf8461" >
-		<ee:transform doc:name="vars:dependencyList" doc:id="7dfe308c-eb93-449e-b094-5e5b4a946871">
+	<sub-flow name="anypoint-platform-invocations-subflow" doc:id="125b1ee5-8678-4a3c-95b9-32f8f4057ac5" >
+		<ee:transform doc:name="vars:dependencyList" doc:id="3e86494b-10c2-4c7d-b0b0-0fbe9d441318">
 		<ee:message>
 			</ee:message>
 			<ee:variables >
@@ -85,7 +87,7 @@ output application/json
 </ee:variables>
 		
 </ee:transform>
-		<ee:transform doc:name="Transform Message" doc:id="59ff692a-9085-46f8-ace4-c90bbec6bdd7" >
+		<ee:transform doc:name="Transform Message" doc:id="b3e53139-e9c4-4b44-8999-3ba223f8142c" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
@@ -95,34 +97,52 @@ output application/java
 []]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<foreach doc:name="For Each" doc:id="7fe8e2da-579b-4c18-8e25-51f256783ab0" collection="#[vars.dependencyList]">
-			<ee:transform doc:name="vars:requestUriPath" doc:id="45ce4da3-7f41-4afc-b990-4b892b3be9ee" >
+		<foreach doc:name="For Each" doc:id="705504d1-4d1e-4bd7-ae1e-3ac615f08ada" collection="#[vars.dependencyList]">
+			<ee:transform doc:name="vars:requestUriPath" doc:id="4a7abffb-089d-4119-9b6f-8c50f08ddee7" >
 				<ee:message >
 				</ee:message>
 				<ee:variables >
 					<ee:set-variable variableName="requestUriPath" ><![CDATA['https://anypoint.mulesoft.com/exchange/api/v2/assets/' ++ payload.groupId ++ "/" ++ payload.artifactId ++ "/asset"]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
-			<http:request method="#[vars.method]" doc:name="Request" doc:id="cb36d243-6542-4f01-b9a0-49e71f271e40" config-ref="platform-api-invocation" url="#[vars.requestUriPath]">
+			<http:request method="#[vars.method]" doc:name="Request" doc:id="14067209-59b7-4cc2-9a5d-f6479e6eb6ba" config-ref="platform-api-invocation" url="#[vars.requestUriPath]">
 				<http:headers ><![CDATA[#[output application/java
 ---
 {
 	"Authorization" : "Bearer "++ (vars.tokenResponse.access_token  as String default "")
 }]]]></http:headers>
 			</http:request>
-			<ee:transform doc:name="Transform Message" doc:id="af9a3e4c-953b-4f9f-85eb-6f885c2a7115" >
+			<ee:transform doc:name="Transform Message" doc:id="68d2990b-5048-438b-ac50-86aeec224e85" >
 				<ee:message >
 				</ee:message>
 				<ee:variables >
-					<ee:set-variable variableName="arr" ><![CDATA[%dw 2.0
+					<ee:set-variable variableName="arr" ><![CDATA[	%dw 2.0
 output application/java
 ---
-vars.arr ++ payload]]></ee:set-variable>
+vars.arr ++ [payload]]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="ee4e9e2f-18fe-4d1f-b8d1-62cc15bf5a3e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.dependencyList  map ((item, index) -> {
+	
+	"connectorName": item.artifactId,
+	"connectorGroupName": item.groupId,
+	"currentVersionInApi": item.version,
+	"latestVersionInExchange": vars.arr[index].version
+	
+})
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 			
-	</sub-flow>
+	
+</sub-flow>
 	
 
     
@@ -131,3 +151,23 @@ vars.arr ++ payload]]></ee:set-variable>
 
 
 </mule>
+
+
+
+
+response:
+
+[
+    {
+        "connectorName": "mule-http-connector",
+        "connectorGroupName": "org.mule.connectors",
+        "currentVersionInApi": "1.6.0",
+        "latestVersionInExchange": "1.7.3"
+    },
+    {
+        "connectorName": "mule-sockets-connector",
+        "connectorGroupName": "org.mule.connectors",
+        "currentVersionInApi": "1.2.2",
+        "latestVersionInExchange": "1.2.3"
+    }
+]
