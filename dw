@@ -1,6 +1,6 @@
 %dw 2.0
-import * from dw::util::Values
 output application/json
+
 var array1 = [
   {
     "connectorName": "mule-http-connector",
@@ -10,19 +10,21 @@ var array1 = [
   {
     "connectorName": "mule-sockets-connector",
     "connectorGroupName": "org.mule.connectors",
-    "currentVersionInApi": "1.2.2"
+    "currentVersionInApi": "1.2.3"
   }
 ]
-var array2 = 
+var properties = 
   {
     "project.build.sourceEncoding": "UTF-8",
     "project.reporting.outputEncoding": "UTF-8",
     "app.runtime": "4.4.0-20220824",
     "mule.maven.plugin.version": "3.8.0",
-    "mule.http.version": "1.7.1"
-  }
+    "mule.http.version": "1.7.8"
+}
+
+var resultMap = array1 map ((item) -> {
+    "currentVersionInApi": properties[item.currentVersionInApi] default item.currentVersionInApi
+})
 
 ---
-array1 map ((item, index) -> {
-    currentVersionInApi: keysOf(item)  contains  keysOf(array2)
-})
+resultMap
