@@ -154,7 +154,7 @@ var details = vars.dependencyList  map ((item, index) -> {
 	
 	"connectorName": item.artifactId,
 	"connectorGroupName": item.groupId,
-	"currentVersionInApi": (item.version replace "\${" with "") replace "}" with "",
+	"currentVersionInApi": ((item.version replace "\$" with "") replace "}" with "") replace "{" with "" ,
 	"latestVersionInExchange": vars.arr[index].version
 	
 })
