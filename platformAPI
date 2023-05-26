@@ -56,7 +56,7 @@ pomContent
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="34c1fae4-f476-482b-ac4e-c6c229137cef" message="#[vars.pomDependencies]"/>
-		<flow-ref doc:name="retrieve-anypoint-platform-access-token-subflow" doc:id="051c9079-3b9b-444b-9899-dcec881fb1b2" name="retrieve-anypoint-platform-access-token-subflow"/> 
+	 	<flow-ref doc:name="retrieve-anypoint-platform-access-token-subflow" doc:id="051c9079-3b9b-444b-9899-dcec881fb1b2" name="retrieve-anypoint-platform-access-token-subflow"/>
    
   
 </flow>
@@ -150,6 +150,9 @@ vars.arr ++ [payload]]]></ee:set-variable>
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 
+var properties = payload.project.properties
+
+
 var details = vars.dependencyList  map ((item, index) -> {
 	
 	"connectorName": item.artifactId,
@@ -164,8 +167,29 @@ details filter ((item, index) -> item.currentVersionInApi != item.latestVersionI
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="e275cde5-3f27-45ff-b509-22b3d98b86d0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+var properties = payload.project.properties
+
+
+var resultMap = payload map ((item) -> {
+    "connectorName": item.connectorName,
+	"connectorGroupName": item.connectorGroupName,
+	"currentVersionInApi": properties[item.currentVersionInApi] default item.currentVersionInApi,
+	"latestVersionInExchange": item.latestVersionInExchange
+    
+})
+
+---
+resultMap]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 			
 	
+
 </sub-flow>
 	
 
