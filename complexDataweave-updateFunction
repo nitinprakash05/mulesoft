@@ -1,0 +1,62 @@
+{
+    "thisname": "a",
+    "object": {
+      "name": "b",
+      "l": [
+        {
+          "other": "c",
+          "list": [
+            
+          ]
+        },
+        {
+          "thisname": "def",
+          "list": [
+            {
+              "this": "500e",
+              "l": [
+                {
+                  "finalname": "f"
+                },
+                {
+                  "finalname": "ghijk"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "array": [
+      {
+        "thisname": "ha"
+      },
+      {
+        "xyz": "abc123"
+      }
+    ]
+  }
+  
+  
+  script:
+  
+  %dw 2.0
+output application/json
+var x= "thisname"
+fun updateFun(e, fn, fx) =
+  e match {
+    case is Array  -> $ map updateFun($, fn, fx)
+    case is Object -> $ mapObject ((v, k) -> 
+                        if (fx(k))
+                          {(k): fn(v)} 
+                          
+                        else
+                          {(k): updateFun(v, fn, fx)})
+    else -> $
+  }
+---
+updateFun(
+  payload, 
+  ((v) -> upper(v)),
+  ((k) -> (x ~= k))
+)
