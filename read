@@ -1,0 +1,4 @@
+Different Types of Architectures Provide an in-depth explanation of the three different types of architectures used in Splunk deployments:
+	Standalone: Describe the standalone architecture, its characteristics, advantages, and limitations. Provide a use case where a standalone architecture is most suitable.
+	Distributed: Explain the distributed architecture, highlighting the reasons for separating components across multiple servers. Discuss the benefits of improved performance and scalability. Provide a use case where a distributed architecture is recommended.
+	Clustered: Detail the clustered deployment, focusing on how multiple indexers work together as a cluster to provide high availability and fault tolerance. Discuss the advantages of clustering and the scenarios in which a clustered architecture is appropriate.
