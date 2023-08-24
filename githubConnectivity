@@ -31,3 +31,27 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<parse-template doc:name="Parse Template" doc:id="53db2fc0-1bb2-4efa-8146-5b7ebf74235d" location="repository.html"/>
 	</flow>
 </mule>
+
+
+
+
+
+
+
+
+ <!DOCTYPE html>\n<html>\n<head>\n<title>GitHub Repositories</title>\n</head>\n<body>\n" ++
+            "<h1>GitHub Repositories</h1>\n" ++
+            "<label for='repoDropdown'>Select a Repository:</label>\n" ++
+            "<select id='repoDropdown'>\n" ++
+            (payload map ((repo) -> "<option value='" ++ repo.full_name ++ "'>" ++ repo.full_name ++ "</option>") joinBy "\n") ++
+            "</select>\n" ++
+            "<div id='repoDetails'></div>\n" ++
+            "<script>\n" ++
+            "var dropdown = document.getElementById('repoDropdown');\n" ++
+            "dropdown.addEventListener('change', function() {\n" ++
+            "var selectedFullName = this.value;\n" ++
+            "var repoDetailsDiv = document.getElementById('repoDetails');\n" ++
+            "// Implement your logic to fetch and display repository details...\n" ++
+            "});\n" ++
+            "</script>\n" ++
+            "</body>\n</html>
