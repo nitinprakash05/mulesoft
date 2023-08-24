@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="70a12b0b-9e5d-46a0-924e-c26cbd4efc00" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_Configuration" doc:name="HTTP Request Configuration" doc:id="c4bdaf54-e49d-43ad-bef3-ce89d65ae067">
+       <http:request-connection host="api.github.com" port="443" protocol="HTTPS" />
+   </http:request-config>
+	<flow name="boilerplateFlow" doc:id="ab1c4a99-6758-4792-8fa8-21eeaa729a63" >
+		<http:listener doc:name="Listener" doc:id="978cb26f-d31e-4ac2-9892-3bb89bd7f169" config-ref="HTTP_Listener_config" path="/fetch-contents"/>
+       <http:request method="GET" doc:name="Request" doc:id="f2357749-a4d4-4cb7-bb6d-b869dd7c643f" config-ref="HTTP_Request_Configuration" path="/users/nitinprakash05/repos">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+   "Authorization": "Bearer 11AB2CIII0gLckzfTHbDSQ_swYk3AR2PzbmhAbSo27162ixNoet5Osztg9NtthzF2FA2IDPOMT9NtH1"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+   "owner": "nitinprakash05",
+   //"repo": "mulesoft",
+   //"ref": "dataweave",
+   "path": "" , // Leave this empty to list root contents
+}]]]></http:query-params>
+		</http:request>
+		<parse-template doc:name="Parse Template" doc:id="53db2fc0-1bb2-4efa-8146-5b7ebf74235d" location="repository.html"/>
+	</flow>
+</mule>
