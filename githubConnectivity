@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="70a12b0b-9e5d-46a0-924e-c26cbd4efc00" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
@@ -17,7 +18,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
-   "Authorization": "Bearer 11AB2CIII0gLckzfTHbDSQ_swYk3AR2PzbmhAbSo27162ixNoet5Osztg9NtthzF2FA2IDPOMT9NtH1"
+   "Authorization": "Bearer 1AB2CIII0gLckzfTHbDSQ_swYk3AR2PzbmhAbSo27162ixNoet5Osztg9NtthzF2FA2IDPOMT9NtH1v"
 }]]]></http:headers>
 			<http:query-params ><![CDATA[#[output application/java
 ---
@@ -28,7 +29,16 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
    "path": "" , // Leave this empty to list root contents
 }]]]></http:query-params>
 		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="8d8556cd-8f2f-42f8-85ff-eb49510bc260" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+(payload map ((repo) -> "<option value='" ++ repo.full_name ++ "'>" ++ repo.full_name ++ "</option>") joinBy "\n")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 		<parse-template doc:name="Parse Template" doc:id="53db2fc0-1bb2-4efa-8146-5b7ebf74235d" location="repository.html"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="21f18d15-026f-4fa5-a6b6-cca71932dd61" />
 	</flow>
 </mule>
 
@@ -39,19 +49,48 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 
 
 
- <!DOCTYPE html>\n<html>\n<head>\n<title>GitHub Repositories</title>\n</head>\n<body>\n" ++
-            "<h1>GitHub Repositories</h1>\n" ++
-            "<label for='repoDropdown'>Select a Repository:</label>\n" ++
-            "<select id='repoDropdown'>\n" ++
-            (payload map ((repo) -> "<option value='" ++ repo.full_name ++ "'>" ++ repo.full_name ++ "</option>") joinBy "\n") ++
-            "</select>\n" ++
-            "<div id='repoDetails'></div>\n" ++
-            "<script>\n" ++
-            "var dropdown = document.getElementById('repoDropdown');\n" ++
-            "dropdown.addEventListener('change', function() {\n" ++
-            "var selectedFullName = this.value;\n" ++
-            "var repoDetailsDiv = document.getElementById('repoDetails');\n" ++
-            "// Implement your logic to fetch and display repository details...\n" ++
-            "});\n" ++
-            "</script>\n" ++
-            "</body>\n</html>
+
+ <!DOCTYPE html><html><head><title>GitHub Repositories</title></head><body> 
+<h1>GitHub Repositories</h1>
+<label for='repoDropdown'>Select a Repository:</label> 
+<select id='repoDropdown'> 
+#[payload] 
+"</select>
+<div id='repoDetails'></div>
+    <label for='projectName'>Enter Project Name:</label>
+    <input type='text' id='projectName'>
+
+    <button id='setupAndPublish'>Setup and Publish</button>
+    <div id='publishStatus'></div>
+<script>
+var dropdown = document.getElementById('repoDropdown'); 
+dropdown.addEventListener('change', function() {
+var selectedFullName = this.value;
+var repoDetailsDiv = document.getElementById('repoDetails');
+// Implement your logic to fetch and display repository details...
+});
+ var setupAndPublishButton = document.getElementById('setupAndPublish');
+        setupAndPublishButton.addEventListener('click', function () {
+            var projectNameInput = document.getElementById('projectName');
+            var projectName = projectNameInput.value;
+            var selectedRepo = dropdown.value; // Get the selected repository value
+
+            // Pass the entered project name and selected repository to the backend using an API call
+            fetch('/clone-and-publish', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ projectName: projectName, gitRepoUrl: selectedRepo })
+            })
+                .then(response => response.text())
+                .then(data => {
+                    publishStatusDiv.textContent = data;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    publishStatusDiv.textContent = 'An error occurred during setup and publishing.';
+                });
+        });
+    </script>
+</body></html>
